@@ -5,8 +5,10 @@
 (require 'duncans_emacs)
 
 ;; hide the tool bar but show the menu bar
-(tool-bar-mode 0)
-(menu-bar-mode 0)
+(if window-system
+  (progn
+    (tool-bar-mode 0)
+    (menu-bar-mode 0)))
 
 ;; allow us to use the X-Windows clipboard
 (setq x-select-enable-clipboard t)  ; as above
