@@ -4,8 +4,12 @@
 (add-to-list 'load-path "~/.emacs.d/duncans_emacs")
 (require 'duncans_emacs)
 
+;; hide the tool bar but show the menu bar
+(tool-bar-mode 0)
+(menu-bar-mode 0)
+
 ;; allow us to use the X-Windows clipboard
-(setq x-select-enable-clipboard t)	; as above
+(setq x-select-enable-clipboard t)  ; as above
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 ;; don't wait for font change; works around a Gnome bug (see https://launchpad.net/metacity/+bug/23005)
@@ -71,7 +75,7 @@
 ;;   "coffee-mode-hook"
 ;;   (set (make-local-variable 'tab-width) 2))
 ;; (add-hook 'coffee-mode-hook
-;; 	  '(lambda() (coffee-custom)))
+;;    '(lambda() (coffee-custom)))
 
 ;; SASS
 (require 'sass-mode)
@@ -120,14 +124,23 @@
 ;; dont save a semantic.cache file in every dir (courtesy http://shreevatsa.wordpress.com/)
 (setq semanticdb-default-save-directory "~/.emacs.d/semantic_cache")
 
+;; launch some shells unless we're in Windows
+(if (and 
+     (not (equal system-type 'windows-nt)))
+    (duncans_emacs:create-terminals 
+     '("*tests*" 
+       "*server*" 
+       "*guard*" 
+       "*misc*")))
+
 ;; show full path in title bar
 ;; thanks to: http://www.arminsadeghi.com/slickedit_and_emacs
 (setq-default frame-title-format
-	      (list '((buffer-file-name " %f"
-					(dired-directory
-					 dired-directory
-					 (revert-buffer-function " %b"
-								 ("%b - Dir:  " default-directory))))))) 
+        (list '((buffer-file-name " %f"
+          (dired-directory
+           dired-directory
+           (revert-buffer-function " %b"
+                 ("%b - Dir:  " default-directory))))))) 
 
 ;; SLIME
 (require 'slime)
