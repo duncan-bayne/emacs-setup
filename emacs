@@ -187,5 +187,5 @@
 (require 'find-file-in-project)
 (global-set-key (kbd "C-x t") 'find-file-in-project)
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
-      '("*.yml" "*.sass" "*.haml" "*.css" "*.rake" "Rakefile" "Gemfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js"))
+      '("*.yml" "*.sass" "*.haml" "*.css" "*.rake" "Rakefile" "Gemfile" "Guardfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js"))
 (setq ffip-limit 10240)
