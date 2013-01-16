@@ -189,3 +189,7 @@
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
       '("*.yml" "*.sass" "*.haml" "*.css" "*.rake" "Rakefile" "Gemfile" "Guardfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js"))
 (setq ffip-limit 10240)
+
+;; automatically revert changed files
+(global-auto-revert-mode 1)
+
