@@ -40,6 +40,7 @@
    "~/.emacs.d/coffee-mode" 
    "~/.emacs.d/undo-tree"
    "~/.emacs.d/emms"
+   "~/.emacs.d/js2-mode"
    "~/.emacs.d/find-file-in-project"))
 
 ;; Emacs itself
@@ -69,7 +70,10 @@
    "\\.hamljs$"))
 
 ;; Coffeescript
+(require 'js2-mode)
 (require 'coffee-mode)
+(setq coffee-tab-width 2)
+(global-set-key (kbd "C-B") 'coffee-compile-region)
 (duncans_emacs:set-mode 'coffee-mode '("\\.coffee$"))
 
 ;; use two spaces for tabs in Coffeescript; see https://github.com/defunkt/coffee-mode
@@ -180,9 +184,6 @@
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   "Prevent annoying \"Active processes exist\" query when you quit Emacs."
   (flet ((process-list ())) ad-do-it))
-
-;; make coffee-mode use two spaces for tabs
-(setq coffee-tab-width 2)
 
 ;; find file in project, like Command-T in TextMate
 (require 'find-file-in-project)
