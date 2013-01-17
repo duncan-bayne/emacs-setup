@@ -69,6 +69,12 @@
    "\\.hamlc$"
    "\\.hamljs$"))
 
+;; CSS
+(duncans_emacs:set-mode
+ 'css-mode
+ '("\\.css$"
+   "\\.scss$"))
+
 ;; Coffeescript
 (require 'js2-mode)
 (require 'coffee-mode)
@@ -189,7 +195,7 @@
 (require 'find-file-in-project)
 (global-set-key (kbd "C-x t") 'find-file-in-project)
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
-      '("*.yml" "*.sass" "*.haml" "*.hamlc" "*.css" "*.rake" "Rakefile" "Gemfile" "Guardfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js" "*.json"))
+      '("*.yml" "*.sass" "*.haml" "*.hamlc" "*.css" "*.rake" "Rakefile" "Gemfile" "Guardfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js" "*.json" "*.scss"))
 (setq ffip-limit 10240)
 
 ;; automatically revert changed files
