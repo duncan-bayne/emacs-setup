@@ -41,7 +41,8 @@
    "~/.emacs.d/undo-tree"
    "~/.emacs.d/emms"
    "~/.emacs.d/js2-mode"
-   "~/.emacs.d/find-file-in-project"))
+   "~/.emacs.d/find-file-in-project"
+   "~/.emacs.d/tomatinho"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -201,3 +202,6 @@
 ;; automatically revert changed files
 (global-auto-revert-mode 1)
 
+;; Pomodoro with tomatinho
+(require 'tomatinho)
+(global-set-key (kbd "<f12>") 'tomatinho)
