@@ -6,9 +6,9 @@
 
 ;; hide the tool bar but show the menu bar
 (if window-system
-  (progn
-    (tool-bar-mode 0)
-    (menu-bar-mode 0)))
+    (progn
+      (tool-bar-mode 0)
+      (menu-bar-mode 0)))
 
 ;; allow us to use the X-Windows clipboard
 (setq x-select-enable-clipboard t)  ; as above
@@ -42,7 +42,8 @@
    "~/.emacs.d/emms"
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/find-file-in-project"
-   "~/.emacs.d/tomatinho"))
+   "~/.emacs.d/tomatinho"
+   "~/.emacs.d/ws-trim"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -150,11 +151,11 @@
 ;; show full path in title bar
 ;; thanks to: http://www.arminsadeghi.com/slickedit_and_emacs
 (setq-default frame-title-format
-        (list '((buffer-file-name " %f"
-          (dired-directory
-           dired-directory
-           (revert-buffer-function " %b"
-                 ("%b - Dir:  " default-directory))))))) 
+	      (list '((buffer-file-name " %f"
+					(dired-directory
+					 dired-directory
+					 (revert-buffer-function " %b"
+								 ("%b - Dir:  " default-directory))))))) 
 
 ;; SLIME
 (require 'slime)
@@ -205,3 +206,10 @@
 ;; Pomodoro with tomatinho
 (require 'tomatinho)
 (global-set-key (kbd "<f12>") 'tomatinho)
+
+;; trim trailing whitespace
+(require 'ws-trim)
+(global-ws-trim-mode t)
+(set-default 'ws-trim-level 2)
+(setq ws-trim-global-modes '(guess (not message-mode eshell-mode)))
+
