@@ -19,25 +19,25 @@
 (modify-frame-parameters nil '((wait-for-wm . nil)))
 
 (custom-set-faces
- ;; make the line numbers fade into the background in console mode 
+ ;; make the line numbers fade into the background in console mode
  '(linum ((t (:inherit (shadow default) :background "grey" :foreground "black")))))
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
- '("~/.emacs.d" 
-   "~/.emacs.d/multiterm" 
-   "~/.emacs.d/ruby-mode" 
-   "~/.emacs.d/psvn" 
-   "~/.emacs.d/ccrypt" 
-   "~/.emacs.d/yaml-mode" 
-   "~/.emacs.d/vbnet-mode" 
-   "~/.emacs.d/cucumber.el" 
-   "~/.emacs.d/php-mode" 
-   "~/.emacs.d/inform-mode" 
-   "~/.emacs.d/haml-mode" 
-   "~/.emacs.d/sass-mode" 
-   "~/.emacs.d/slime" 
-   "~/.emacs.d/coffee-mode" 
+ '("~/.emacs.d"
+   "~/.emacs.d/multiterm"
+   "~/.emacs.d/ruby-mode"
+   "~/.emacs.d/psvn"
+   "~/.emacs.d/ccrypt"
+   "~/.emacs.d/yaml-mode"
+   "~/.emacs.d/vbnet-mode"
+   "~/.emacs.d/cucumber.el"
+   "~/.emacs.d/php-mode"
+   "~/.emacs.d/inform-mode"
+   "~/.emacs.d/haml-mode"
+   "~/.emacs.d/sass-mode"
+   "~/.emacs.d/slime"
+   "~/.emacs.d/coffee-mode"
    "~/.emacs.d/undo-tree"
    "~/.emacs.d/emms"
    "~/.emacs.d/js2-mode"
@@ -51,12 +51,12 @@
 ;; Ruby (thanks to http://stackoverflow.com/users/523044/tyler)
 (global-font-lock-mode 1)
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
-(duncans_emacs:set-mode 
+(duncans_emacs:set-mode
  'ruby-mode
  '("\\.rb$"
    "\\.rsel$"
    "\\.rhtml$"
-   "\\.erb$" 
+   "\\.erb$"
    "\\.prawn$"
    "\\.rake$"
    "Rakefile$"
@@ -105,7 +105,7 @@
 ;; http://www.emacswiki.org/emacs/YamlMode
 (require 'yaml-mode)
 (duncans_emacs:set-mode 'yaml-mode '("\\.yml$"))
-(add-hook 'yaml-mode-hook '(lambda () (define-key yaml-mode-map "\C-m" 'newline-and-indent))) 
+(add-hook 'yaml-mode-hook '(lambda () (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
 
 ;; PHP
 (require 'php-mode)
@@ -140,12 +140,12 @@
 (setq semanticdb-default-save-directory "~/.emacs.d/semantic_cache")
 
 ;; launch some shells unless we're in Windows
-(if (and 
+(if (and
      (not (equal system-type 'windows-nt)))
-    (duncans_emacs:create-terminals 
-     '("*tests*" 
-       "*server*" 
-       "*guard*" 
+    (duncans_emacs:create-terminals
+     '("*tests*"
+       "*server*"
+       "*guard*"
        "*misc*")))
 
 ;; show full path in title bar
@@ -155,13 +155,13 @@
 					(dired-directory
 					 dired-directory
 					 (revert-buffer-function " %b"
-								 ("%b - Dir:  " default-directory))))))) 
+								 ("%b - Dir:  " default-directory)))))))
 
 ;; SLIME
 (require 'slime)
 (add-hook 'lisp-mode-hook (lambda () (slime-mode t)))
 (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
-(setq inferior-lisp-program "sbcl") 
+(setq inferior-lisp-program "sbcl")
 
 ;; some Steve Yegge wisdom; see http://sites.google.com/site/steveyegge2/effective-emacs
 (global-set-key (kbd "C-w")     'backward-kill-word)
@@ -211,5 +211,4 @@
 (require 'ws-trim)
 (global-ws-trim-mode t)
 (set-default 'ws-trim-level 2)
-(setq ws-trim-global-modes '(guess (not message-mode eshell-mode)))
-
+(setq ws-trim-global-modes '(guess (not message-mode eshell-mode haml-mode)))
