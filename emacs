@@ -212,3 +212,10 @@
 (global-ws-trim-mode t)
 (set-default 'ws-trim-level 2)
 (setq ws-trim-global-modes '(guess (not message-mode eshell-mode haml-mode)))
+
+;; nice font scaling shortcuts
+(global-set-key (kbd "C-+") 'text-scale-increase)
+(global-set-key (kbd "C--") 'text-scale-decrease)
+
+;; load work-specific stuff
+(load "~/.emacs.d/work.el")
