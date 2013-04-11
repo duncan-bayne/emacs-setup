@@ -43,7 +43,8 @@
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/tomatinho"
-   "~/.emacs.d/ws-trim"))
+   "~/.emacs.d/ws-trim"
+   "~/.emacs.d/markdown-mode"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -219,3 +220,10 @@
 
 ;; load work-specific stuff
 (load "~/.emacs.d/work.el")
+
+;; markdown mode
+(autoload 'markdown-mode "markdown-mode"
+   "Major mode for editing Markdown files" t)
+(add-to-list 'auto-mode-alist '("\\.text\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+(add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
