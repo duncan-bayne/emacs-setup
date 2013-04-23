@@ -44,6 +44,7 @@
    "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/tomatinho"
    "~/.emacs.d/ws-trim"
+   "~/.emacs.d/emacs-jabber"
    "~/.emacs.d/markdown-mode"))
 
 ;; Emacs itself
@@ -237,3 +238,6 @@
 			 (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 (global-set-key (kbd "C-x C-r") 'sudo-edit)
+
+;; Jabber client
+(require 'jabber-autoloads)
