@@ -241,3 +241,6 @@
 
 ;; Jabber client
 (require 'jabber-autoloads)
+
+;; some things - like ccrypt - don't like auto-save
+(setq auto-save-default nil)
