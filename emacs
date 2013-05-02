@@ -200,7 +200,7 @@
 (require 'find-file-in-project)
 (global-set-key (kbd "C-x t") 'find-file-in-project)
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
-      '("*.yml" "*.sass" "*.haml" "*.hamlc" "*.css" "*.rake" "Rakefile" "Gemfile" "Guardfile" "*.txt" "*.coffee" "*.feature" "*.erb" "*.ru" "*.html" "*.js" "*.json" "*.scss" "*.s" "*.c" "*.h" "*.asm" "Makefile"))
+      '("*"))
 (setq ffip-limit 10240)
 
 ;; automatically revert changed files
