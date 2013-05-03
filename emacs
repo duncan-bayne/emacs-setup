@@ -221,7 +221,8 @@
 (global-set-key (kbd "C--") 'text-scale-decrease)
 
 ;; load work-specific stuff
-(load "~/.emacs.d/work.el")
+(if (file-exists-p "~/.emacs.d/work.el")
+    (load "~/.emacs.d/work.el"))
 
 ;; markdown mode
 (autoload 'markdown-mode "markdown-mode"
