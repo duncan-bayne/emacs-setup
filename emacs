@@ -231,6 +231,7 @@
 (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
 (add-to-list 'auto-mode-alist '("\\.md\\'" . markdown-mode))
 (global-set-key (kbd "C-x M-m") 'duncans_emacs:markdownify)
+(global-set-key (kbd "C-x M-M") 'duncans_emacs:markdown)
 
 ;; edit as root
 (defun sudo-edit (&optional arg)

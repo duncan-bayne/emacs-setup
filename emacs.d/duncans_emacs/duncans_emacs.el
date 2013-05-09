@@ -27,6 +27,11 @@
   (interactive)
   (shell-command-on-region (point-min) (point-max) "markdownify" (current-buffer) t))
 
+(defun duncans_emacs:markdown()
+  "Run the current buffers contents through the markdown utility."
+  (interactive)
+  (shell-command-on-region (point-min) (point-max) "markdown" (current-buffer) t))
+
 (defun duncans_emacs:add-to-load-path (path-list)
   "Adds each path in path-list to the load path."
   (mapcar
