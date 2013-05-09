@@ -23,12 +23,12 @@
    (buffer-list)))
 
 (defun duncans_emacs:markdownify()
-  "Run the current buffers contents through the markdownify utility."
+  "Assume the buffer contains HTML, and convert it to Markdown.  Assumes markdownify is installed."
   (interactive)
   (shell-command-on-region (point-min) (point-max) "markdownify" (current-buffer) t))
 
 (defun duncans_emacs:markdown()
-  "Run the current buffers contents through the markdown utility."
+  "Assume the buffer contains Markdown, and convert it to HTML.  Assumes markdown is installed."
   (interactive)
   (shell-command-on-region (point-min) (point-max) "markdown" (current-buffer) t))
 
