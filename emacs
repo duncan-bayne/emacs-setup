@@ -25,28 +25,28 @@
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
  '("~/.emacs.d"
-   "~/.emacs.d/multiterm"
-   "~/.emacs.d/ruby-mode"
-   "~/.emacs.d/psvn"
+   "~/.emacs.d/auto-complete"
    "~/.emacs.d/ccrypt"
-   "~/.emacs.d/yaml-mode"
-   "~/.emacs.d/vbnet-mode"
+   "~/.emacs.d/coffee-mode"
    "~/.emacs.d/cucumber.el"
-   "~/.emacs.d/php-mode"
-   "~/.emacs.d/inform-mode"
+   "~/.emacs.d/emacs-jabber"
+   "~/.emacs.d/emms"
+   "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/haml-mode"
+   "~/.emacs.d/inform-mode"
+   "~/.emacs.d/js2-mode"
+   "~/.emacs.d/markdown-mode"
+   "~/.emacs.d/multiterm"
+   "~/.emacs.d/php-mode"
+   "~/.emacs.d/psvn"
+   "~/.emacs.d/ruby-mode"
    "~/.emacs.d/sass-mode"
    "~/.emacs.d/slime"
-   "~/.emacs.d/coffee-mode"
-   "~/.emacs.d/undo-tree"
-   "~/.emacs.d/emms"
-   "~/.emacs.d/js2-mode"
-   "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/tomatinho"
+   "~/.emacs.d/undo-tree"
+   "~/.emacs.d/vbnet-mode"
    "~/.emacs.d/ws-trim"
-   "~/.emacs.d/emacs-jabber"
-   "~/.emacs.d/auto-complete"
-   "~/.emacs.d/markdown-mode"))
+   "~/.emacs.d/yaml-mode"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -56,16 +56,17 @@
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (duncans_emacs:set-mode
  'ruby-mode
- '("\\.rb$"
-   "\\.rsel$"
-   "\\.rhtml$"
-   "\\.erb$"
+ '("\\.erb$"
+   "Gemfile$"
+   "\\.gemspec$"
+   "Guardfile$"
    "\\.prawn$"
    "\\.rake$"
    "Rakefile$"
-   "Gemfile$"
-   "Guardfile$"
-   "\\.gemspec$"))
+   "\\.rb$"
+   "\\.rhtml$"
+   "\\.rsel$"))
+
 
 ;; HAML
 (require 'haml-mode)
