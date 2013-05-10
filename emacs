@@ -64,7 +64,8 @@
    "\\.rake$"
    "Rakefile$"
    "Gemfile$"
-   "Guardfile$"))
+   "Guardfile$"
+   "\\.gemspec$"))
 
 ;; HAML
 (require 'haml-mode)
