@@ -265,3 +265,6 @@
 		  (add-to-list 'ac-sources 'ac-source-rsense-constant)
 		  (auto-complete-mode)))
       (require 'auto-complete)))
+
+;; always find myself doing this - is that a process smell?
+(global-set-key (kbd "C-x M-f") 'find-grep-dired)
