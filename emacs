@@ -251,20 +251,5 @@
 ;; some things - like ccrypt - don't like auto-save
 (setq auto-save-default nil)
 
-;; Rsense and Autocomplete, but only if RSense is installed
-(if (file-exists-p "/opt/rsense-0.3")
-    (progn
-      (setq rsense-home "/opt/rsense-0.3")
-      (add-to-list 'load-path (concat rsense-home "/etc"))
-      (require 'rsense)
-
-      ;; Rsense + Autocomplete
-      (add-hook 'ruby-mode-hook
-		(lambda ()
-		  (add-to-list 'ac-sources 'ac-source-rsense-method)
-		  (add-to-list 'ac-sources 'ac-source-rsense-constant)
-		  (auto-complete-mode)))
-      (require 'auto-complete)))
-
 ;; always find myself doing this - is that a process smell?
 (global-set-key (kbd "C-x M-f") 'find-grep-dired)
