@@ -89,14 +89,6 @@
 (global-set-key (kbd "C-B") 'coffee-compile-region)
 (duncans_emacs:set-mode 'coffee-mode '("\\.coffee$"))
 
-;; use two spaces for tabs in Coffeescript; see https://github.com/defunkt/coffee-mode
-;; commented out for now, see https://github.com/defunkt/coffee-mode/issues/68
-;; (defun coffee-custom ()
-;;   "coffee-mode-hook"
-;;   (set (make-local-variable 'tab-width) 2))
-;; (add-hook 'coffee-mode-hook
-;;    '(lambda() (coffee-custom)))
-
 ;; SASS
 (require 'sass-mode)
 (duncans_emacs:set-mode 'sass-mode '("\\.sass$"))
@@ -138,8 +130,9 @@
 (require 'jka-compr-ccrypt "jka-compr-ccrypt.el")
 
 ;; tab-with-spaces
-(setq indent-tabs-mode nil)
-(setq standard-indent 2)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 2)
+(setq indent-line-function 'insert-tab)
 
 ;; dont save a semantic.cache file in every dir (courtesy http://shreevatsa.wordpress.com/)
 (setq semanticdb-default-save-directory "~/.emacs.d/semantic_cache")
