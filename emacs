@@ -32,6 +32,7 @@
    "~/.emacs.d/emacs-jabber"
    "~/.emacs.d/emms"
    "~/.emacs.d/find-file-in-project"
+   "~/.emacs.d/geiser"
    "~/.emacs.d/haml-mode"
    "~/.emacs.d/inform-mode"
    "~/.emacs.d/js2-mode"
@@ -43,6 +44,7 @@
    "~/.emacs.d/sass-mode"
    "~/.emacs.d/slime"
    "~/.emacs.d/tomatinho"
+   "~/.emacs.d/quack"
    "~/.emacs.d/undo-tree"
    "~/.emacs.d/vbnet-mode"
    "~/.emacs.d/ws-trim"
@@ -149,11 +151,11 @@
 ;; show full path in title bar
 ;; thanks to: http://www.arminsadeghi.com/slickedit_and_emacs
 (setq-default frame-title-format
-	      (list '((buffer-file-name " %f"
-					(dired-directory
-					 dired-directory
-					 (revert-buffer-function " %b"
-								 ("%b - Dir:  " default-directory)))))))
+              (list '((buffer-file-name " %f"
+                                        (dired-directory
+                                         dired-directory
+                                         (revert-buffer-function " %b"
+                                                                 ("%b - Dir:  " default-directory)))))))
 
 ;; SLIME
 (require 'slime)
@@ -234,7 +236,7 @@
   (interactive "P")
   (if (or arg (not buffer-file-name))
       (find-file (concat "/sudo:root@localhost:"
-			 (ido-read-file-name "Find file(as root): ")))
+                         (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 (global-set-key (kbd "C-x C-r") 'sudo-edit)
 
@@ -246,3 +248,11 @@
 
 ;; always find myself doing this - is that a process smell?
 (global-set-key (kbd "C-x M-f") 'find-grep-dired)
+
+;; Geiser and Quack for Racket
+(load-file "~/.emacs.d/geiser/elisp/geiser.el")
+(setq scheme-program-name "racket")
+(defun scheme-mode-quack-hook ()
+  (require 'quack)
+  (setq quack-fontify-style 'emacs))
+(add-hook 'scheme-mode-hook 'scheme-mode-quack-hook)
