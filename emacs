@@ -38,6 +38,7 @@
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/markdown-mode"
    "~/.emacs.d/multiterm"
+   "~/.emacs.d/org-present"
    "~/.emacs.d/php-mode"
    "~/.emacs.d/psvn"
    "~/.emacs.d/ruby-mode"
@@ -256,3 +257,14 @@
   (require 'quack)
   (setq quack-fontify-style 'emacs))
 (add-hook 'scheme-mode-hook 'scheme-mode-quack-hook)
+
+;; presentations in Emacs - yay, one more violation of the UNIX philosophy ;)
+(autoload 'org-present "org-present" nil t)
+(add-hook 'org-present-mode-hook
+          (lambda ()
+            (org-present-big)
+            (org-display-inline-images)))
+(add-hook 'org-present-mode-quit-hook
+          (lambda ()
+            (org-present-small)
+            (org-remove-inline-images)))
