@@ -34,6 +34,7 @@
    "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/geiser"
    "~/.emacs.d/haml-mode"
+   "~/.emacs.d/hexrgb"
    "~/.emacs.d/inform-mode"
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/markdown-mode"
@@ -268,3 +269,13 @@
           (lambda ()
             (org-present-small)
             (org-remove-inline-images)))
+
+;; helper function to connect to HipChat rooms through jabber.el
+(defun hipchat-join (room)
+  (interactive "sRoom name: ")
+  (jabber-groupchat-join
+   (jabber-read-account)
+   (concat hipchat-number "_" room "@conf.hipchat.com")
+   hipchat-nickname
+   t))
+(custom-set-variables '(jabber-auto-reconnect t))
