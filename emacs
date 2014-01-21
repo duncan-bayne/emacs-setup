@@ -31,6 +31,7 @@
    "~/.emacs.d/cucumber.el"
    "~/.emacs.d/emacs-jabber"
    "~/.emacs.d/emms"
+   "~/.emacs.d/emotion-iconous-mode"
    "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/geiser"
    "~/.emacs.d/haml-mode"
@@ -244,6 +245,7 @@
 
 ;; Jabber client
 (require 'jabber-autoloads)
+(require 'emotion-iconous-mode)
 
 ;; some things - like ccrypt - don't like auto-save
 (setq auto-save-default nil)
@@ -277,5 +279,7 @@
    (jabber-read-account)
    (concat hipchat-number "_" room "@conf.hipchat.com")
    hipchat-nickname
-   t))
+   t)
+  (require 'jabber-emoicon))
+
 (custom-set-variables '(jabber-auto-reconnect t))
