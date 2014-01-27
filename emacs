@@ -281,5 +281,6 @@
    hipchat-nickname
    t)
   (require 'jabber-emoicon))
-
 (custom-set-variables '(jabber-auto-reconnect t))
+
+(global-set-key (kbd "s-b") 'browse-url-at-point)
