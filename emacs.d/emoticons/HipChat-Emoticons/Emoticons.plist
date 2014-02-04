@@ -15,6 +15,15 @@
         <key>Name</key>
         <string>(nyan)</string>
       </dict>
+      <key>awthanks.png</key>
+      <dict>
+        <key>Equivalents</key>
+        <array>
+          <string>(awthanks)</string>
+        </array>
+        <key>Name</key>
+        <string>(awthanks)</string>
+      </dict>
       <key>smile.png</key>
       <dict>
         <key>Equivalents</key>
