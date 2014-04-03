@@ -202,7 +202,7 @@
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
       '("*"))
 (setq ffip-limit 10240)
-(setq ffip-find-options "-not -iwholename '*.db\/*' -not -iwholename '.git'")
+(setq ffip-find-options "-not -iwholename '.db\/*' -not -iwholename '.git'")
 
 ;; automatically revert changed files
 (global-auto-revert-mode 1)
@@ -283,5 +283,8 @@
    t)
   (require 'jabber-emoicon))
 (custom-set-variables '(jabber-auto-reconnect t))
+
+;; beep and xmessage on Jabber message
+(add-hook 'jabber-alert-message-hooks 'jabber-message-xmessage 'jabber-message-beep)
 
 (global-set-key (kbd "s-b") 'browse-url-at-point)
