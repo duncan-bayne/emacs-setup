@@ -285,6 +285,6 @@
 (custom-set-variables '(jabber-auto-reconnect t))
 
 ;; beep and xmessage on Jabber message
-(add-hook 'jabber-alert-message-hooks 'jabber-message-xmessage 'jabber-message-beep)
+(add-hook 'jabber-alert-message-hooks 'jabber-message-beep)
 
 (global-set-key (kbd "s-b") 'browse-url-at-point)
