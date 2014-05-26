@@ -25,6 +25,8 @@
 
 ;;; Code:
 
+(require 'cl)
+
 (defvar tomatinho-buffer "Tomatinho!")
 (defvar tomatinho-format "%H:%M:%S")
 (defvar tomatinho-timer nil)
@@ -38,11 +40,14 @@
     (define-key map (kbd "Q") 'tomatinho-interactive-quit)
     (define-key map (kbd "R") 'tomatinho-interactive-reset)
     (define-key map (kbd "<return>") 'tomatinho-interactive-new-pomodoro)
+    (define-key map (kbd "S-<return>") 'tomatinho-interactive-deliberate-pause)
     (define-key map (kbd "<tab>") 'tomatinho-interactive-toggle-display)
     map))
 (defvar tomatinho-ok-face '(:foreground "#ff0000"))
 (defvar tomatinho-pause-face '(:foreground "#00ff00"))
 (defvar tomatinho-reset-face '(:foreground "#333333"))
+(defvar tomatinho-pomodoro-history-face
+  '(:height 444))
 (defvar tomatinho-events nil)
 (defvar tomatinho-current '(ok . 0))
 (defvar tomatinho-last 0)
@@ -52,10 +57,17 @@
 (defvar tomatinho-sound-tick (expand-file-name (concat tomatinho-dir "tick.wav")))
 (defvar tomatinho-sound-tack (expand-file-name (concat tomatinho-dir "tack.wav")))
 
-
 ;;;;;;;;;;;;;;;;;
 ;; Interactive ;;
 ;;;;;;;;;;;;;;;;;
+
+(defun tomatinho-interactive-deliberate-pause ()
+  "Pause deliberately"
+  (interactive)
+  (let ((event (if (equal (car tomatinho-current) 'pause) tomatinho-current
+                 (cons 'reset (cdr tomatinho-current)))))
+    (tomatinho-register-event event '(pause . 0)))
+  (play-sound-file-async tomatinho-sound-tick))
 
 (defun tomatinho-interactive-kill-buffer ()
   "Kills the buffer."
@@ -65,12 +77,9 @@
 (defun tomatinho-interactive-new-pomodoro ()
   "Forgoes the current pomodoro or leaves a break."
   (interactive)
-  (setq tomatinho-events
-        (case (car tomatinho-current)
-          (ok (append tomatinho-events `((reset . ,(cdr tomatinho-current)))))
-          (pause (append tomatinho-events (list tomatinho-current))))
-        tomatinho-current '(ok . 0) 
-	tomatinho-last (timestamp))
+  (let ((event (if (equal (car tomatinho-current) 'pause) tomatinho-current
+                 (cons 'reset (cdr tomatinho-current)))))
+    (tomatinho-register-event event '(ok . 0)))
   (play-sound-file-async tomatinho-sound-tick))
 
 (defun tomatinho-interactive-reset ()
@@ -94,9 +103,7 @@
   (if (y-or-n-p "Are you sure you want to turn off Tomatinho? ")
       (progn (cancel-timer tomatinho-timer)
              (kill-current-buffer)
-             (setq tomatinho-current '(ok . 0)
-                   tomatinho-events nil
-                   tomatinho-last (timestamp)))
+             (tomatinho-set-events nil '(ok . 0)))
     (message "Pfew! That was close!")))
 
 
@@ -128,6 +135,16 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Display and updates ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun tomatinho-set-events (events new-status)
+  "Sets both the event history and the current status"
+  (setq tomatinho-events events 
+        tomatinho-current new-status
+        tomatinho-last   (timestamp)))
+
+(defun tomatinho-register-event (event new-status)
+  "Appends to the event list and and sets the status"
+  (tomatinho-set-events (append tomatinho-events (list event)) new-status))
 
 (defun tomatinho-tubes-string (cons i)
   "Auxiliary function to display the tubes correctly."
@@ -167,9 +184,9 @@
       (let* ((type (car item)) (val (cdr item))
              (number (format "%d. " i))
              (number (if (equal type 'ok) number (make-string (length number) ? )))
-             (m-ok (format "Completed a pomodoro with %d minutes\n" val))
-             (m-reset (format "Gave up after %d minutes\n" val))
-             (m-pause (format "Had a break of %d minutes\n" val))
+             (m-ok (format "Completed a pomodoro with %d minute%s\n" val (if (> val 1) "s" "")))
+             (m-reset (format "Gave up after %d minute%s\n" val (if (> val 1) "s" "")))
+             (m-pause (format "Had a break of %d minute%s\n" val (if (> val 1) "s" "")))
              (message (case type
                         (ok (propertize m-ok 'font-lock-face tomatinho-ok-face))
                         (reset (propertize m-reset 'font-lock-face tomatinho-reset-face))
@@ -177,14 +194,19 @@
         (insert (concat number message)))))
   (let ((type (car tomatinho-current)) (val (cdr tomatinho-current))
         (diff (- (timestamp) tomatinho-last)))
-    (insert (format "\nCurrently on %s for %d minutes and %d seconds."
-                    (if (equal type 'ok) "a pomodoro" "break") val diff))))
+    (insert (propertize (format "%d:%02d %s"  val diff (if (equal type 'ok) "pomodoro" "break"))
+                        'font-lock-face
+                        (append  tomatinho-time-face
+                                 (if (equal type 'ok) tomatinho-ok-face tomatinho-pause-face)
+                                 tomatinho-pomodoro-history-face)))))
 
 
 (defun tomatinho-update ()
   "First updates the variables and then the buffer, if it exists."
   (let ((time (timestamp)) (type (car tomatinho-current)) (val (cdr tomatinho-current))
-        (l tomatinho-pomodoro-length) (tick tomatinho-sound-tick) (tack tomatinho-sound-tack))
+        (l tomatinho-pomodoro-length)
+        (tick nil) ;; MXE was here. Instead of:  (tick tomatinho-sound-tick)
+        (tack tomatinho-sound-tack))
     (when (>= (- time tomatinho-last) (if tomatinho-debug 0 60))
       (setq tomatinho-current (cons type (1+ val)) tomatinho-last time)
       (when (and (equal type 'ok) (>= (1+ val) l))
@@ -195,6 +217,7 @@
     (with-current-buffer (get-buffer tomatinho-buffer)
       (unlocking-buffer
        (delete-region (point-min) (point-max))
+       (setq buffer-undo-tree nil)
        (insert (propertize (format-time-string tomatinho-format)
                            'font-lock-face tomatinho-time-face))
        (insert "\n")
@@ -209,6 +232,7 @@
   (interactive)
   (with-current-buffer (get-buffer-create tomatinho-buffer)
     (use-local-map tomatinho-map) (font-lock-mode t))
+  (setq tomatinho-last (timestamp))
   (tomatinho-update)
   (when tomatinho-timer (cancel-timer tomatinho-timer))
   (setq tomatinho-timer (run-at-time nil 1 'tomatinho-update))
