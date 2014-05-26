@@ -210,6 +210,7 @@
 ;; Pomodoro with tomatinho
 (require 'tomatinho)
 (global-set-key (kbd "<f12>") 'tomatinho)
+(global-set-key (kbd "s-<return>") 'tomatinho-interactive-deliberate-pause)
 
 ;; trim trailing whitespace
 (require 'ws-trim)
