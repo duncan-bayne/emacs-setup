@@ -218,6 +218,15 @@
         <key>Name</key>
         <string>(allthethings)</string>
       </dict>
+      <key>aeropress.png</key>
+      <dict>
+        <key>Equivalents</key>
+        <array>
+          <string>(aeropress)</string>
+        </array>
+        <key>Name</key>
+        <string>(aeropress)</string>
+      </dict>
       <key>android.png</key>
       <dict>
         <key>Equivalents</key>
