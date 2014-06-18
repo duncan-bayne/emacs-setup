@@ -27,8 +27,10 @@
  '("~/.emacs.d"
    "~/.emacs.d/auto-complete"
    "~/.emacs.d/ccrypt"
+   "~/.emacs.d/cl-lib"
    "~/.emacs.d/coffee-mode"
    "~/.emacs.d/cucumber.el"
+   "~/.emacs.d/diff-hl"
    "~/.emacs.d/emacs-jabber"
    "~/.emacs.d/emms"
    "~/.emacs.d/emotion-iconous-mode"
@@ -288,6 +290,10 @@
 ;; beep and xmessage on Jabber message
 (add-hook 'jabber-alert-message-hooks 'jabber-message-beep)
 
-(global-set-key (kbd "s-b") 'browse-url-at-point)
+;; always-on VCS diff highlighting
+(require 'diff-hl)
+(global-diff-hl-mode)
 
+(global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
+
