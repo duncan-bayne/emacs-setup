@@ -294,6 +294,10 @@
 (require 'diff-hl)
 (global-diff-hl-mode)
 
+;; make buffer names unique with pathname, in reverse, for clearer navigation
+(require 'uniquify)
+(setq uniquify-buffer-name-style 'reverse)
+
 (global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
 
