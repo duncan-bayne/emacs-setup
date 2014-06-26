@@ -35,6 +35,7 @@
    "~/.emacs.d/emotion-iconous-mode"
    "~/.emacs.d/find-file-in-project"
    "~/.emacs.d/geiser"
+   "~/.emacs.d/go-mode"
    "~/.emacs.d/haml-mode"
    "~/.emacs.d/hexrgb"
    "~/.emacs.d/inform-mode"
@@ -118,6 +119,12 @@
 (autoload 'inform-maybe-mode "inform-mode" "Inform/C header editing mode.")
 (duncans_emacs:set-mode 'inform-maybe-mode '("\\.h\\'"))
 (duncans_emacs:set-mode 'inform-mode '("\\.inf\\'"))
+
+;; golang
+(require 'go-mode)
+(duncans_emacs:set-mode
+ 'go-mode
+ '("\\.go$"))
 
 ;; modern Emacs behaviour; see http://xahlee.org/emacs/emacs_make_modern.html
 (cua-mode)
