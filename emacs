@@ -74,7 +74,6 @@
    "\\.rhtml$"
    "\\.rsel$"))
 
-
 ;; HAML
 (require 'haml-mode)
 (duncans_emacs:set-mode
