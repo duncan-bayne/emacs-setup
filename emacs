@@ -208,7 +208,7 @@
 (global-set-key (kbd "C-x t") 'find-file-in-project)
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
       '("*"))
-(setq ffip-limit 10240)
+(setq ffip-limit 102400)
 (setq ffip-find-options "-not -iwholename '.db\/*' -not -iwholename '.git'")
 
 ;; automatically revert changed files
