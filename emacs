@@ -45,7 +45,6 @@
    "~/.emacs.d/org-present"
    "~/.emacs.d/php-mode"
    "~/.emacs.d/psvn"
-   "~/.emacs.d/ruby-mode"
    "~/.emacs.d/sass-mode"
    "~/.emacs.d/slime"
    "~/.emacs.d/tomatinho"
