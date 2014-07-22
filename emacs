@@ -208,7 +208,7 @@
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
       '("*"))
 (setq ffip-limit 102400)
-(setq ffip-find-options "-not -iwholename '.db\/*' -not -iwholename '.git'")
+(setq ffip-find-options "-not -regex '.*\\.git.*' -not -regex '.*\\.db.*'")
 
 ;; automatically revert changed files
 (global-auto-revert-mode 1)
