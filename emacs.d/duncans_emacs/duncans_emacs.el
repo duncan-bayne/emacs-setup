@@ -19,18 +19,8 @@
   (mapcar
    '(lambda (buf)
       (if (and (buffer-file-name buf) (not (buffer-modified-p buf)))
-	  (kill-buffer buf)))
+    (kill-buffer buf)))
    (buffer-list)))
-
-(defun duncans_emacs:markdownify()
-  "Assume the buffer contains HTML, and convert it to Markdown.  Assumes markdownify is installed."
-  (interactive)
-  (shell-command-on-region (point-min) (point-max) "markdownify" (current-buffer) t))
-
-(defun duncans_emacs:markdown()
-  "Assume the buffer contains Markdown, and convert it to HTML.  Assumes markdown is installed."
-  (interactive)
-  (shell-command-on-region (point-min) (point-max) "markdown" (current-buffer) t))
 
 (defun duncans_emacs:add-to-load-path (path-list)
   "Adds each path in path-list to the load path."
