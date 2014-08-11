@@ -148,6 +148,12 @@
 ;; dont save a semantic.cache file in every dir (courtesy http://shreevatsa.wordpress.com/)
 (setq semanticdb-default-save-directory "~/.emacs.d/semantic_cache")
 
+;; hide line numbers for terminals
+;; no way of turning off line highlighting, grump grump grump (http://www.emacswiki.org/emacs/HighlightCurrentLine)
+(add-hook 'term-mode-hook
+          (lambda ()
+            (linum-mode 0)))
+
 ;; launch some shells unless we're in Windows
 (if (and
      (not (equal system-type 'windows-nt)))
