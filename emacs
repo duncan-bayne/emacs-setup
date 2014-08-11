@@ -300,6 +300,13 @@
 (require 'uniquify)
 (setq uniquify-buffer-name-style 'reverse)
 
+;; command to turn on ANSI colour highlighting ...
+(require 'ansi-color)
+(defun display-ansi-colors ()
+  (interactive)
+  (ansi-color-apply-on-region (point-min) (point-max)))
+;; ... and assume that log files may contain ANSI colour sequences
+(add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
 (global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
-
