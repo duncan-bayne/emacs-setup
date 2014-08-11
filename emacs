@@ -271,10 +271,14 @@
 (autoload 'org-present "org-present" nil t)
 (add-hook 'org-present-mode-hook
           (lambda ()
+            (linum-mode 0)
+            (global-hl-line-mode 0)
             (org-present-big)
             (org-display-inline-images)))
 (add-hook 'org-present-mode-quit-hook
           (lambda ()
+            (linum-mode 1)
+            (global-hl-line-mode 1)
             (org-present-small)
             (org-remove-inline-images)))
 
