@@ -264,7 +264,6 @@
 
 ;; always find myself doing this - is that a process smell?
 (global-set-key (kbd "C-x M-f") 'find-grep-dired)
-(setq grep-find-ignored-directories '(".db" ".git"))
 
 ;; Geiser and Quack for Racket
 (load-file "~/.emacs.d/geiser/elisp/geiser.el")
