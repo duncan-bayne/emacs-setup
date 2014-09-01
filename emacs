@@ -50,7 +50,6 @@
    "~/.emacs.d/tomatinho"
    "~/.emacs.d/quack"
    "~/.emacs.d/undo-tree"
-   "~/.emacs.d/vbnet-mode"
    "~/.emacs.d/ws-trim"
    "~/.emacs.d/yaml-mode"))
 
