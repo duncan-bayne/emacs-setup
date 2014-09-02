@@ -124,7 +124,6 @@
  '("\\.go$"))
 
 ;; modern Emacs behaviour; see http://xahlee.org/emacs/emacs_make_modern.html
-(cua-mode)
 (transient-mark-mode 1)
 (delete-selection-mode 1)
 (global-linum-mode 1)
