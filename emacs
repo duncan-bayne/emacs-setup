@@ -176,11 +176,6 @@
 (add-hook 'inferior-lisp-mode-hook (lambda () (inferior-slime-mode t)))
 (setq inferior-lisp-program "sbcl")
 
-;; some Steve Yegge wisdom; see http://sites.google.com/site/steveyegge2/effective-emacs
-(global-set-key (kbd "C-w")     'backward-kill-word)
-(global-set-key (kbd "C-x C-k") 'kill-region)
-(global-set-key (kbd "C-c C-k") 'kill-region)
-
 ;; https://github.com/duncan-bayne/mint-setup/issues/16 (Emacs: content-search across code files)
 (global-set-key (kbd "C-x F") 'find-name-dired)
 
