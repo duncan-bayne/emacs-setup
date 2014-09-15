@@ -14,10 +14,6 @@
 (setq x-select-enable-clipboard t)  ; as above
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
-;; don't wait for font change; works around a Gnome bug (see https://launchpad.net/metacity/+bug/23005)
-(set-default-font "-unknown-Liberation Mono-normal-normal-normal-*-*-*-*-*-m-0-iso10646-1")
-(modify-frame-parameters nil '((wait-for-wm . nil)))
-
 (custom-set-faces
  ;; make the line numbers fade into the background in console mode
  '(linum ((t (:inherit (shadow default) :background "grey" :foreground "black")))))
