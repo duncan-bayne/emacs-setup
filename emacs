@@ -269,13 +269,15 @@
             (linum-mode 0)
             (global-hl-line-mode 0)
             (org-present-big)
-            (org-display-inline-images)))
+            (org-display-inline-images)
+            (visual-line-mode)))
 (add-hook 'org-present-mode-quit-hook
           (lambda ()
             (linum-mode 1)
             (global-hl-line-mode 1)
             (org-present-small)
-            (org-remove-inline-images)))
+            (org-remove-inline-images)
+            (setq visual-line-mode nil)))
 
 ;; helper function to connect to HipChat rooms through jabber.el
 (defun hipchat-join (room)
