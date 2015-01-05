@@ -38,6 +38,7 @@
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/markdown-mode"
    "~/.emacs.d/multiterm"
+   "~/.emacs.d/org-caldav"
    "~/.emacs.d/org-present"
    "~/.emacs.d/php-mode"
    "~/.emacs.d/psvn"
@@ -269,13 +270,15 @@
             (linum-mode 0)
             (global-hl-line-mode 0)
             (org-present-big)
-            (org-display-inline-images)))
+            (org-display-inline-images)
+            (visual-line-mode)))
 (add-hook 'org-present-mode-quit-hook
           (lambda ()
             (linum-mode 1)
             (global-hl-line-mode 1)
             (org-present-small)
-            (org-remove-inline-images)))
+            (org-remove-inline-images)
+            (setq visual-line-mode nil)))
 
 ;; helper function to connect to HipChat rooms through jabber.el
 (defun hipchat-join (room)
@@ -306,6 +309,9 @@
   (ansi-color-apply-on-region (point-min) (point-max)))
 ;; ... and assume that log files may contain ANSI colour sequences
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
+;; CalDAV synchronisation with org-mode
+(require 'org-caldav)
 
 (global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
