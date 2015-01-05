@@ -38,6 +38,7 @@
    "~/.emacs.d/js2-mode"
    "~/.emacs.d/markdown-mode"
    "~/.emacs.d/multiterm"
+   "~/.emacs.d/org-caldav"
    "~/.emacs.d/org-present"
    "~/.emacs.d/php-mode"
    "~/.emacs.d/psvn"
@@ -308,6 +309,9 @@
   (ansi-color-apply-on-region (point-min) (point-max)))
 ;; ... and assume that log files may contain ANSI colour sequences
 (add-to-list 'auto-mode-alist '("\\.log\\'" . display-ansi-colors))
+
+;; CalDAV synchronisation with org-mode
+(require 'org-caldav)
 
 (global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
