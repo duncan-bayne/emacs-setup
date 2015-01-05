@@ -41,7 +41,7 @@
 (defun duncans_emacs:create-terminals (terminal-names)
   "Creates terminals with the specified names using multi-term."
   (require 'multi-term)
-  (setq multi-term-program "/usr/local/bin/zsh")
+  (setq multi-term-program "/usr/bin/zsh")
   (mapcar
    (lambda (desired-name)
      (multi-term)
