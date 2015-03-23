@@ -26,6 +26,7 @@
    "~/.emacs.d/coffee-mode"
    "~/.emacs.d/cucumber.el"
    "~/.emacs.d/diff-hl"
+   "~/.emacs.d/editorconfig"
    "~/.emacs.d/emacs-jabber"
    "~/.emacs.d/emms"
    "~/.emacs.d/emotion-iconous-mode"
@@ -318,3 +319,6 @@
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
 
 (server-start)
+
+;; keep the same configuration as team-mates
+(load "editorconfig")
