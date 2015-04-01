@@ -6,14 +6,14 @@
 ;;; This file defines the "Swank" TCP server for Emacs to talk to. The
 ;;; code in this file is purely portable Common Lisp. We do require a
 ;;; smattering of non-portable functions in order to write the server,
-;;; so we have defined them in `swank-backend.lisp' and implemented
+;;; so we have defined them in `swank/backend.lisp' and implemented
 ;;; them separately for each Lisp implementation. These extensions are
-;;; available to us here via the `SWANK-BACKEND' package.
+;;; available to us here via the `SWANK/BACKEND' package.
 
-(defpackage :swank
-  (:use :cl :swank-backend :swank-match :swank-rpc)
+(defpackage swank
+  (:use cl swank/backend swank/match swank/rpc)
   (:export #:startup-multiprocessing
-           #:start-server 
+           #:start-server
            #:create-server
            #:stop-server
            #:restart-server
@@ -65,7 +65,8 @@
            #:eval-in-emacs
            #:y-or-n-p-in-emacs
            #:*find-definitions-right-trim*
-           #:*find-definitions-left-trim*))
+           #:*find-definitions-left-trim*
+           #:*after-toggle-trace-hook*))
 
 (in-package :swank)
 
@@ -428,7 +429,7 @@ Useful for low level debugging."
 
 ;;;;; Helper macros
 
-(defmacro destructure-case (value &rest patterns)
+(defmacro dcase (value &body patterns)
   "Dispatch VALUE to one of PATTERNS.
 A cross between `case' and `destructuring-bind'.
 The pattern syntax is:
@@ -451,7 +452,7 @@ corresponding values in the CDR of VALUE."
                                ,@body)))))
          ,@(if (eq (caar (last patterns)) t)
                '()
-               `((t (error "destructure-case failed: ~S" ,tmp))))))))
+               `((t (error "dcase failed: ~S" ,tmp))))))))
 
 
 ;;;; Interrupt handling 
@@ -611,7 +612,7 @@ recently established one."
           (t (sentinel-serve msg)))))
 
 (defun sentinel-serve (msg)
-  (destructure-case msg
+  (dcase msg
     ((:add-connection conn)
      (push conn *connections*))
     ((:close-connection connection condition backtrace)
@@ -776,22 +777,40 @@ connections, otherwise it will be closed after the first."
 
 (defparameter *loopback-interface* "127.0.0.1")
 
+(defmacro restart-loop (form &body clauses)
+  "Executes FORM, with restart-case CLAUSES which have a chance to modify FORM's
+environment before trying again (by returning normally) or giving up (through an
+explicit transfer of control), all within an implicit block named nil.
+e.g.: (restart-loop (http-request url) (use-value (new) (setq url new)))"
+  `(loop (restart-case (return ,form) ,@clauses)))
+
+(defun socket-quest (port backlog)
+  (restart-loop (create-socket *loopback-interface* port :backlog backlog)
+    (use-value (&optional (new-port (1+ port)))
+      :report (lambda (stream) (format stream "Try a port other than ~D" port))
+      :interactive
+      (lambda ()
+        (format *query-io* "Enter port (defaults to ~D): " (1+ port))
+        (finish-output *query-io*)      ; necessary for tunnels
+        (ignore-errors (list (parse-integer (read-line *query-io*)))))
+      (setq port new-port))))
+
 (defun setup-server (port announce-fn style dont-close backlog)
   (init-log-output)
-  (let* ((socket (create-socket *loopback-interface* port :backlog backlog))
+  (let* ((socket (socket-quest port backlog))
          (port (local-port socket)))
     (funcall announce-fn port)
     (labels ((serve () (accept-connections socket style dont-close))
-             (note () (send-to-sentinel `(:add-server ,socket ,port 
+             (note () (send-to-sentinel `(:add-server ,socket ,port
                                                       ,(current-thread))))
              (serve-loop () (note) (loop do (serve) while dont-close)))
       (ecase style
-        (:spawn (initialize-multiprocessing 
+        (:spawn (initialize-multiprocessing
                  (lambda ()
                    (start-sentinel)
                    (spawn #'serve-loop :name (format nil "Swank ~s" port)))))
-        ((:fd-handler :sigio) 
-         (note) 
+        ((:fd-handler :sigio)
+         (note)
          (add-fd-handler socket #'serve))
         ((nil) (serve-loop))))
     port))
@@ -932,7 +951,7 @@ The processing is done in the extent of the toplevel restart."
                             (:emacs-channel-send . _))
                        timeout)
     (when timeout? (return))
-    (destructure-case event
+    (dcase event
       ((:emacs-rex &rest args) (apply #'eval-for-emacs args))
       ((:emacs-channel-send channel (selector &rest args))
        (channel-send channel selector args))))))
@@ -1004,8 +1023,10 @@ The processing is done in the extent of the toplevel restart."
   (:method ((connection multithreaded-connection) (id (eql :find-existing)))
     (car (mconn.active-threads connection)))
   (:method (connection (id integer))
+    (declare (ignorable connection))
     (find-thread id))
   (:method ((connection singlethreaded-connection) id)
+    (declare (ignorable connection connection id))
     (current-thread)))
 
 (defun interrupt-worker-thread (connection id)
@@ -1051,7 +1072,7 @@ The processing is done in the extent of the toplevel restart."
 (defun dispatch-event (connection event)
   "Handle an event triggered either by Emacs or within Lisp."
   (log-event "dispatch-event: ~s~%" event)
-  (destructure-case event
+  (dcase event
     ((:emacs-rex form package thread-id id)
      (let ((thread (thread-for-evaluation connection thread-id)))
        (cond (thread
@@ -1286,17 +1307,17 @@ event was found."
 
 (defun simple-repl ()
   (loop
-   (format t "~a> " (package-string-for-prompt *package*))
-   (force-output)
-   (let ((form (handler-case (read)
-                 (end-of-repl-input () (return)))))
-     (let ((- form)
-           (values (multiple-value-list (eval form))))
-       (setq *** **  ** *  * (car values)
-             /// //  // /  / values
-             +++ ++  ++ +  + form)
-       (cond ((null values) (format t "; No values~&"))
-             (t (mapc (lambda (v) (format t "~s~&" v)) values)))))))
+    (format t "~a> " (package-string-for-prompt *package*))
+    (force-output)
+    (let ((form (handler-case (read)
+                  (end-of-repl-input () (return)))))
+      (let ((- form)
+            (values (multiple-value-list (eval form))))
+        (setq *** **  ** *  * (car values)
+              /// //  // /  / values
+              +++ ++  ++ +  + form)
+        (cond ((null values) (format t "; No values~&"))
+              (t (mapc (lambda (v) (format t "~s~&" v)) values)))))))
 
 (defun make-repl-input-stream (connection stdin)
   (make-input-stream
@@ -1441,7 +1462,7 @@ converted to lower case."
 	   (send-to-emacs `(:eval ,(current-thread-id) ,tag 
 				  ,(process-form-for-emacs form)))
 	   (let ((value (caddr (wait-for-event `(:emacs-return ,tag result)))))
-	     (destructure-case value
+	     (dcase value
 	       ((:ok value) value)
                ((:error kind . data) (error "~a: ~{~a~}" kind data))
 	       ((:abort) (abort))))))))
@@ -1701,7 +1722,7 @@ Return nil if no package matches."
 
 (defun guess-buffer-package (string)
   "Return a package for STRING. 
-Fall back to the the current if no such package exists."
+Fall back to the current if no such package exists."
   (or (and string (guess-package string))
       *package*))
 
@@ -2123,7 +2144,7 @@ after Emacs causes a restart to be invoked."
            (list :debug-activate (current-thread-id) level nil))
           (loop 
            (handler-case 
-               (destructure-case (wait-for-event 
+               (dcase (wait-for-event 
                                   `(or (:emacs-rex . _)
                                        (:sldb-return ,(1+ level))))
                  ((:emacs-rex &rest args) (apply #'eval-for-emacs args))
@@ -2144,28 +2165,36 @@ conditions are simply reported."
     (send-to-emacs `(:debug-condition ,(current-thread-id)
                                       ,(princ-to-string real-condition)))))
 
-(defun condition-message (condition)
-  (let ((*print-pretty* t)
-        (*print-right-margin* 65)
-        (*print-circle* t))
-    (format-sldb-condition condition)))
+(defun %%condition-message (condition)
+  (let ((limit (ash 1 16)))
+    (with-string-stream (stream :length limit)
+      (handler-case
+          (let ((*print-readably* nil)
+                (*print-pretty* t)
+                (*print-right-margin* 65)
+                (*print-circle* t)
+                (*print-length* (or *print-length* limit))
+                (*print-level* (or *print-level* limit))
+                (*print-lines* (or *print-lines* limit)))
+            (print-condition condition stream))
+        (serious-condition (c)
+          (ignore-errors
+            (with-standard-io-syntax
+              (let ((*print-readably* nil))
+                (format stream "~&Error (~a) during printing: " (type-of c))
+                (print-unreadable-object (condition stream :type t
+                                                    :identity t))))))))))
 
-(defvar *sldb-condition-printer* #'condition-message
+(defun %condition-message (condition)
+  (string-trim #(#\newline #\space #\tab)
+               (%%condition-message condition)))
+
+(defvar *sldb-condition-printer* #'%condition-message
   "Function called to print a condition to an SLDB buffer.")
 
 (defun safe-condition-message (condition)
-  "Safely print condition to a string, handling any errors during
-printing."
-  (truncate-string
-   (handler-case
-       (funcall *sldb-condition-printer* condition)
-     (error (cond)
-       ;; Beware of recursive errors in printing, so only use the condition
-       ;; if it is printable itself:
-       (format nil "Unable to display error condition~@[: ~A~]"
-               (ignore-errors (princ-to-string cond)))))
-   (ash 1 16)
-   "..."))
+  "Print condition to a string, handling any errors during printing."
+  (funcall *sldb-condition-printer* condition))
 
 (defun debugger-condition-for-emacs ()
   (list (safe-condition-message *swank-debugger-condition*)
@@ -2823,7 +2852,7 @@ that symbols accessible in the current package go first."
                 (format string "Variable:~% ~a~2%" vdoc))
               (when fdoc
                 (format string "Function:~% Arglist: ~a~2% ~a"
-                        (swank-backend:arglist sym)
+                        (arglist sym)
                         fdoc))))
           (format nil "No such symbol, ~a." symbol-name)))))
 
@@ -2845,16 +2874,32 @@ Include the nicknames if NICKNAMES is true."
 (defun tracedp (fspec)
   (member fspec (eval '(trace))))
 
+(defvar *after-toggle-trace-hook* nil
+  "Hook called whenever a SPEC is traced or untraced.
+
+If non-nil, called with two arguments SPEC and TRACED-P." )
 (defslimefun swank-toggle-trace (spec-string)
-  (let ((spec (from-string spec-string)))
-    (cond ((consp spec) ; handle complicated cases in the backend
+  (let* ((spec (from-string spec-string))
+         (retval (cond ((consp spec) ; handle complicated cases in the backend
            (toggle-trace spec))
           ((tracedp spec)
 	   (eval `(untrace ,spec))
 	   (format nil "~S is now untraced." spec))
 	  (t
            (eval `(trace ,spec))
-	   (format nil "~S is now traced." spec)))))
+                        (format nil "~S is now traced." spec))))
+         (traced-p (let* ((tosearch "is now traced.")
+                          (start (- (length retval)
+                                    (length tosearch)))
+                          (end (+ start (length tosearch))))
+                     (search tosearch (subseq retval start end))))
+         (hook-msg (when *after-toggle-trace-hook*
+                     (funcall *after-toggle-trace-hook*
+                              spec
+                              traced-p))))
+    (if hook-msg
+        (format nil "~a~%(also ~a)" retval hook-msg)
+        retval)))
 
 (defslimefun untrace-all ()
   (untrace))
@@ -2869,13 +2914,19 @@ Include the nicknames if NICKNAMES is true."
 (defslimefun unintern-symbol (name package)
   (let ((pkg (guess-package package)))
     (cond ((not pkg) (format nil "No such package: ~s" package))
-          (t 
+          (t
            (multiple-value-bind (sym found) (parse-symbol name pkg)
              (case found
                ((nil) (format nil "~s not in package ~s" name package))
                (t
                 (unintern sym pkg)
                 (format nil "Uninterned symbol: ~s" sym))))))))
+
+(defslimefun swank-delete-package (package-name)
+  (let ((pkg (or (guess-package package-name)
+                 (error "No such package: ~s" package-name))))
+    (delete-package pkg)
+    nil))
 
 
 ;;;; Profiling
@@ -2910,6 +2961,13 @@ Include the nicknames if NICKNAMES is true."
             (maybe-profile symbol))))
     (format nil "~a function~:p ~:*~[are~;is~:;are~] now profiled" count)))
 
+(defslimefun swank-profile-package (package-name callersp methodsp)
+  (let ((pkg (or (guess-package package-name)
+                 (error "Not a valid package name: ~s" package-name))))
+    (check-type callersp boolean)
+    (check-type methodsp boolean)
+    (profile-package pkg callersp methodsp)))
+
 
 ;;;; Source Locations
 
@@ -2920,7 +2978,7 @@ Include the nicknames if NICKNAMES is true."
   (find-source-location (value-spec-ref spec)))
 
 (defun value-spec-ref (spec)
-  (destructure-case spec
+  (dcase spec
     ((:string string package)
      (with-buffer-syntax (package)
        (eval (read-from-string string))))
@@ -3136,7 +3194,7 @@ DSPEC is a string and LOCATION a source location. NAME is a string."
   (let ((newline '#.(string #\newline)))
     (etypecase part
       (string (list part))
-      (cons (destructure-case part
+      (cons (dcase part
               ((:newline) (list newline))
               ((:value obj &optional str) 
                (list (value-part obj str (istate.parts istate))))
@@ -3178,7 +3236,12 @@ DSPEC is a string and LOCATION a source location. NAME is a string."
     (lcons (llist-range list start end))))
 
 (defslimefun inspector-nth-part (index)
-  (aref (istate.parts *istate*) index))
+  "Return the current inspector's INDEXth part.
+The second value indicates if that part exists at all."
+  (let* ((parts (istate.parts *istate*))
+         (foundp (< index (length parts))))
+    (values (and foundp (aref parts index))
+            foundp)))
 
 (defslimefun inspect-nth-part (index)
   (with-buffer-syntax ()
@@ -3540,7 +3603,7 @@ after each command.")
      (handle-indentation-cache-request connection (receive)))))
 
 (defun handle-indentation-cache-request (connection request)
-  (destructure-case request
+  (dcase request
     ((:sync-indentation package)
      (let ((fullp (need-full-indentation-update-p connection)))
        (perform-indentation-update connection fullp package)))
@@ -3703,8 +3766,7 @@ Collisions are caused because package information is ignored."
 (defun before-init (version load-path)
   (pushnew :swank *features*)
   (setq *swank-wire-protocol-version* version)
-  (setq *load-path* load-path)
-  (swank-backend::warn-unimplemented-interfaces))
+  (setq *load-path* load-path))
 
 (defun init ()
   (run-hook *after-init-hook*))

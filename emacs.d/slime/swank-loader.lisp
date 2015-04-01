@@ -10,7 +10,7 @@
 
 ;; If you want customize the source- or fasl-directory you can set
 ;; swank-loader:*source-directory* resp. swank-loader:*fasl-directory*
-;; before loading this files. 
+;; before loading this files.
 ;; E.g.:
 ;;
 ;;   (load ".../swank-loader.lisp")
@@ -32,22 +32,26 @@
   "The directory where to look for the source.")
 
 (defparameter *sysdep-files*
-  #+cmu '(swank-source-path-parser swank-source-file-cache swank-cmucl)
-  #+scl '(swank-source-path-parser swank-source-file-cache swank-scl)
-  #+sbcl '(swank-source-path-parser swank-source-file-cache
-           swank-sbcl swank-gray)
-  #+clozure '(metering swank-ccl swank-gray)
-  #+lispworks '(swank-lispworks swank-gray)
-  #+allegro '(swank-allegro swank-gray)
-  #+clisp '(xref metering swank-clisp swank-gray)
-  #+armedbear '(swank-abcl)
-  #+cormanlisp '(swank-corman swank-gray)
-  #+ecl '(swank-source-path-parser swank-source-file-cache
-          swank-ecl swank-gray))
+  #+cmu '((swank source-path-parser) (swank source-file-cache) (swank cmucl)
+          (swank gray))
+  #+scl '((swank source-path-parser) (swank source-file-cache) (swank scl)
+          (swank gray))
+  #+sbcl '((swank source-path-parser) (swank source-file-cache) (swank sbcl)
+           (swank gray))
+  #+clozure '(metering (swank ccl) (swank gray))
+  #+lispworks '((swank lispworks) (swank gray))
+  #+allegro '((swank allegro) (swank gray))
+  #+clisp '(xref metering (swank clisp) (swank gray))
+  #+armedbear '((swank abcl))
+  #+cormanlisp '((swank corman) (swank gray))
+  #+ecl '((swank ecl) (swank gray))
+  #+clasp '((swank clasp) (swank gray))
+  #+mkcl '((swank mkcl) (swank gray))
+  )
 
 (defparameter *implementation-features*
   '(:allegro :lispworks :sbcl :clozure :cmu :clisp :ccl :corman :cormanlisp
-    :armedbear :gcl :ecl :scl))
+    :armedbear :gcl :ecl :scl :mkcl :clasp))
 
 (defparameter *os-features*
   '(:macosx :linux :windows :mswindows :win32 :solaris :darwin :sunos :hpux
@@ -55,7 +59,7 @@
 
 (defparameter *architecture-features*
   '(:powerpc :ppc :x86 :x86-64 :x86_64 :amd64 :i686 :i586 :i486 :pc386 :iapx386
-    :sparc64 :sparc :hppa64 :hppa :arm
+    :sparc64 :sparc :hppa64 :hppa :arm :armv5l :armv6l :armv7l
     :pentium3 :pentium4
     :java-1.4 :java-1.5 :java-1.6 :java-1.7))
 
@@ -70,10 +74,16 @@
               (when (>= (length vcs-id) 8)
                 (subseq vcs-id 0 8))))))
 
+#+clasp
+(defun clasp-version-string ()
+  (format nil "~A~@[-~A~]"
+          (lisp-implementation-version)
+          (core:lisp-implementation-id)))
+
 (defun lisp-version-string ()
   #+(or clozure cmu) (substitute-if #\_ (lambda (x) (find x " /"))
                                     (lisp-implementation-version))
-  #+(or cormanlisp scl) (lisp-implementation-version)
+  #+(or cormanlisp scl mkcl) (lisp-implementation-version)
   #+sbcl (format nil "~a~:[~;-no-threads~]"
                  (lisp-implementation-version)
                  #+sb-thread nil
@@ -90,7 +100,8 @@
   #+clisp     (let ((s (lisp-implementation-version)))
                 (subseq s 0 (position #\space s)))
   #+armedbear (lisp-implementation-version)
-  #+ecl (ecl-version-string) )
+  #+ecl (ecl-version-string)
+  #+clasp (clasp-version-string))
 
 (defun unique-dir-name ()
   "Return a name that can be used as a directory name that is
@@ -211,28 +222,38 @@ If LOAD is true, load the fasl file."
 
 (defun src-files (names src-dir)
   (mapcar (lambda (name)
-            (make-pathname :name (string-downcase name) :type "lisp"
-                           :defaults src-dir))
+            (multiple-value-bind (dirs name)
+                (etypecase name
+                  (symbol (values '() name))
+                  (cons (values (butlast name) (car (last name)))))
+              (make-pathname
+               :directory (append (or (pathname-directory src-dir)
+                                      '(:relative))
+                                  (mapcar #'string-downcase dirs))
+               :name (string-downcase name)
+               :type "lisp"
+               :defaults src-dir)))
           names))
 
 (defvar *swank-files*
-  `(swank-backend ,@*sysdep-files* swank-match swank-rpc swank))
+  `((swank backend) ,@*sysdep-files* (swank match) (swank rpc)
+    swank))
 
 (defvar *contribs*
   '(swank-util swank-repl
     swank-c-p-c swank-arglists swank-fuzzy
     swank-fancy-inspector
     swank-presentations swank-presentation-streams
-    #+(or asdf sbcl ecl) swank-asdf
+    #+(or asdf2 asdf3 sbcl ecl) swank-asdf
     swank-package-fu
     swank-hyperdoc
     #+sbcl swank-sbcl-exts
     swank-mrepl
-    )
+    swank-trace-dialog)
   "List of names for contrib modules.")
 
 (defun append-dir (absolute name)
-  (merge-pathnames 
+  (merge-pathnames
    (make-pathname :directory `(:relative ,name) :defaults absolute)
    absolute))
 
@@ -262,7 +283,7 @@ If LOAD is true, load the fasl file."
                            load quiet)
   (let* ((swank-src-files (src-files *swank-files* swank-src-dir))
          (contrib-src-files (src-files *contribs* src-dir)))
-    (delete-stale-contrib-fasl-files swank-src-files contrib-src-files 
+    (delete-stale-contrib-fasl-files swank-src-files contrib-src-files
                                      fasl-dir)
     (compile-files contrib-src-files fasl-dir load quiet)))
 
@@ -274,13 +295,35 @@ If LOAD is true, load the fasl file."
   (load-site-init-file *source-directory*)
   (load-user-init-file)
   (when (#-clisp probe-file
-         #+clisp ext:probe-directory        
+         #+clisp ext:probe-directory
          (contrib-dir *source-directory*))
     (eval `(pushnew 'compile-contribs ,(q "swank::*after-init-hook*"))))
   (funcall (q "swank::init")))
 
+(defun string-starts-with (string prefix)
+  (string-equal string prefix :end1 (min (length string) (length prefix))))
+
+(defun list-swank-packages ()
+  (remove-if-not (lambda (package)
+                   (let ((name (package-name package)))
+                     (and (string-not-equal name "swank-loader")
+                          (string-starts-with name "swank"))))
+                 (list-all-packages)))
+
+(defun delete-packages (packages)
+  (dolist (package packages)
+    (flet ((handle-package-error (c)
+             (let ((pkgs (set-difference (package-used-by-list package)
+                                         packages)))
+               (when pkgs
+                 (warn "deleting ~a which is used by ~{~a~^, ~}."
+                       package pkgs))
+               (continue c))))
+      (handler-bind ((package-error #'handle-package-error))
+        (delete-package package)))))
+
 (defun init (&key delete reload load-contribs (setup t)
-               (quiet (not *load-verbose*)))
+                  (quiet (not *load-verbose*)))
   "Load SWANK and initialize some global variables.
 If DELETE is true, delete any existing SWANK packages.
 If RELOAD is true, reload SWANK, even if the SWANK package already exists.
@@ -288,7 +331,7 @@ If LOAD-CONTRIBS is true, load all contribs
 If SETUP is true, load user init files and initialize some
 global variabes in SWANK."
   (when (and delete (find-package :swank))
-    (mapc #'delete-package '(:swank :swank-io-package :swank-backend)))
+    (delete-packages (list-swank-packages)))
   (cond ((or (not (find-package :swank)) reload)
          (load-swank :quiet quiet))
         (t
@@ -300,4 +343,4 @@ global variabes in SWANK."
 
 (defun dump-image (filename)
   (init :setup nil)
-  (funcall (q "swank-backend:save-image") filename))
+  (funcall (q "swank/backend:save-image") filename))
