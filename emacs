@@ -323,3 +323,6 @@
 
 ;; keep the same configuration as team-mates
 (load "editorconfig")
+
+;; load ALL THE MESSAGES in Gnus; best of luck if on Usenet
+(setq gnus-large-newsgroup nil)
