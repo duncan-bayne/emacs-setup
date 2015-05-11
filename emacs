@@ -6,6 +6,9 @@
                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
+(when window-system
+  (load-theme 'solarized t))
+
 ;; my own extensions
 (add-to-list 'load-path "~/.emacs.d/duncans_emacs")
 (require 'duncans_emacs)
