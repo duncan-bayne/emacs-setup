@@ -1,5 +1,11 @@
 (setq inhibit-splash-screen t)
 
+(require 'package)
+(setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
+                         ("marmalade" . "https://marmalade-repo.org/packages/")
+                         ("melpa" . "http://melpa.org/packages/")))
+(package-initialize)
+
 ;; my own extensions
 (add-to-list 'load-path "~/.emacs.d/duncans_emacs")
 (require 'duncans_emacs)
