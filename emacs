@@ -335,4 +335,4 @@
 
 ;; a sensible font size for a 15" 1080p LCD
 (when (member "DejaVu Sans Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "DejaVu Sans Mono 12"))
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono 11"))
