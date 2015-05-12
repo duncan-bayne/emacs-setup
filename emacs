@@ -2,8 +2,8 @@
 
 (require 'package)
 (setq package-archives '(("gnu" . "http://elpa.gnu.org/packages/")
-                         ("marmalade" . "https://marmalade-repo.org/packages/")
-                         ("melpa" . "http://melpa.org/packages/")))
+                          ("marmalade" . "https://marmalade-repo.org/packages/")
+                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
 (global-set-key (kbd "C-M-x") 'magit-status)
@@ -21,50 +21,50 @@
 
 ;; hide the tool bar but show the menu bar
 (if window-system
-    (progn
-      (tool-bar-mode 0)
-      (menu-bar-mode 0)))
+  (progn
+    (tool-bar-mode 0)
+    (menu-bar-mode 0)))
 
 ;; allow us to use the X-Windows clipboard
 (setq x-select-enable-clipboard t)  ; as above
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
 
 (custom-set-faces
- ;; make the line numbers fade into the background in console mode
- '(linum ((t (:inherit (shadow default) :background "grey" :foreground "black")))))
+  ;; make the line numbers fade into the background in console mode
+  '(linum ((t (:inherit (shadow default) :background "grey" :foreground "black")))))
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
- '("~/.emacs.d/auto-complete"
-   "~/.emacs.d/ccrypt"
-   "~/.emacs.d/cl-lib"
-   "~/.emacs.d/coffee-mode"
-   "~/.emacs.d/cucumber.el"
-   "~/.emacs.d/diff-hl"
-   "~/.emacs.d/editorconfig"
-   "~/.emacs.d/emacs-jabber"
-   "~/.emacs.d/emms"
-   "~/.emacs.d/emotion-iconous-mode"
-   "~/.emacs.d/find-file-in-project"
-   "~/.emacs.d/geiser"
-   "~/.emacs.d/go-mode"
-   "~/.emacs.d/haml-mode"
-   "~/.emacs.d/hexrgb"
-   "~/.emacs.d/inform-mode"
-   "~/.emacs.d/js2-mode"
-   "~/.emacs.d/markdown-mode"
-   "~/.emacs.d/multiterm"
-   "~/.emacs.d/org-caldav"
-   "~/.emacs.d/org-present"
-   "~/.emacs.d/php-mode"
-   "~/.emacs.d/psvn"
-   "~/.emacs.d/sass-mode"
-   "~/.emacs.d/slime"
-   "~/.emacs.d/tomatinho"
-   "~/.emacs.d/quack"
-   "~/.emacs.d/undo-tree"
-   "~/.emacs.d/ws-trim"
-   "~/.emacs.d/yaml-mode"))
+  '("~/.emacs.d/auto-complete"
+     "~/.emacs.d/ccrypt"
+     "~/.emacs.d/cl-lib"
+     "~/.emacs.d/coffee-mode"
+     "~/.emacs.d/cucumber.el"
+     "~/.emacs.d/diff-hl"
+     "~/.emacs.d/editorconfig"
+     "~/.emacs.d/emacs-jabber"
+     "~/.emacs.d/emms"
+     "~/.emacs.d/emotion-iconous-mode"
+     "~/.emacs.d/find-file-in-project"
+     "~/.emacs.d/geiser"
+     "~/.emacs.d/go-mode"
+     "~/.emacs.d/haml-mode"
+     "~/.emacs.d/hexrgb"
+     "~/.emacs.d/inform-mode"
+     "~/.emacs.d/js2-mode"
+     "~/.emacs.d/markdown-mode"
+     "~/.emacs.d/multiterm"
+     "~/.emacs.d/org-caldav"
+     "~/.emacs.d/org-present"
+     "~/.emacs.d/php-mode"
+     "~/.emacs.d/psvn"
+     "~/.emacs.d/sass-mode"
+     "~/.emacs.d/slime"
+     "~/.emacs.d/tomatinho"
+     "~/.emacs.d/quack"
+     "~/.emacs.d/undo-tree"
+     "~/.emacs.d/ws-trim"
+     "~/.emacs.d/yaml-mode"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -73,31 +73,31 @@
 (global-font-lock-mode 1)
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (duncans_emacs:set-mode
- 'ruby-mode
- '("\\.erb$"
-   "Gemfile$"
-   "\\.gemspec$"
-   "Guardfile$"
-   "\\.prawn$"
-   "\\.rake$"
-   "Rakefile$"
-   "\\.rb$"
-   "\\.rhtml$"
-   "\\.rsel$"))
+  'ruby-mode
+  '("\\.erb$"
+     "Gemfile$"
+     "\\.gemspec$"
+     "Guardfile$"
+     "\\.prawn$"
+     "\\.rake$"
+     "Rakefile$"
+     "\\.rb$"
+     "\\.rhtml$"
+     "\\.rsel$"))
 
 ;; HAML
 (require 'haml-mode)
 (duncans_emacs:set-mode
- 'haml-mode
- '("\\.haml$"
-   "\\.hamlc$"
-   "\\.hamljs$"))
+  'haml-mode
+  '("\\.haml$"
+     "\\.hamlc$"
+     "\\.hamljs$"))
 
 ;; CSS
 (duncans_emacs:set-mode
- 'css-mode
- '("\\.css$"
-   "\\.scss$"))
+  'css-mode
+  '("\\.css$"
+     "\\.scss$"))
 
 ;; Coffeescript
 (require 'js2-mode)
@@ -133,8 +133,8 @@
 ;; golang
 (require 'go-mode)
 (duncans_emacs:set-mode
- 'go-mode
- '("\\.go$"))
+  'go-mode
+  '("\\.go$"))
 
 ;; modern Emacs behaviour; see http://xahlee.org/emacs/emacs_make_modern.html
 (transient-mark-mode 1)
@@ -162,14 +162,14 @@
 ;; hide line numbers for terminals
 ;; no way of turning off line highlighting, grump grump grump (http://www.emacswiki.org/emacs/HighlightCurrentLine)
 (add-hook 'term-mode-hook
-          (lambda ()
-            (linum-mode 0)))
+  (lambda ()
+    (linum-mode 0)))
 
 ;; launch some shells unless we're in Windows
 (if (and
-     (not (equal system-type 'windows-nt)))
-    (duncans_emacs:create-terminals
-     '("*tests*"
+      (not (equal system-type 'windows-nt)))
+  (duncans_emacs:create-terminals
+    '("*tests*"
        "*server*"
        "*guard*"
        "*misc*")))
@@ -177,11 +177,11 @@
 ;; show full path in title bar
 ;; thanks to: http://www.arminsadeghi.com/slickedit_and_emacs
 (setq-default frame-title-format
-              (list '((buffer-file-name " %f"
-                                        (dired-directory
-                                         dired-directory
-                                         (revert-buffer-function " %b"
-                                                                 ("%b - Dir:  " default-directory)))))))
+  (list '((buffer-file-name " %f"
+            (dired-directory
+              dired-directory
+              (revert-buffer-function " %b"
+                ("%b - Dir:  " default-directory)))))))
 
 ;; SLIME
 (require 'slime)
@@ -200,12 +200,12 @@
 ;; Interactively Do Things ( http://emacswiki.org/emacs/InteractivelyDoThings )
 (require 'ido)
 (custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(ido-enable-flex-matching t)
- '(ido-mode (quote both) nil (ido)))
+  ;; custom-set-variables was added by Custom.
+  ;; If you edit it by hand, you could mess it up, so be careful.
+  ;; Your init file should contain only one such instance.
+  ;; If there is more than one, they won't work right.
+  '(ido-enable-flex-matching t)
+  '(ido-mode (quote both) nil (ido)))
 
 ;; don't keep asking to follow VCS links
 (setq vc-follow-symlinks t)
@@ -219,7 +219,7 @@
 (require 'find-file-in-project)
 (global-set-key (kbd "C-x t") 'find-file-in-project)
 (mapc '(lambda (ext) (add-to-list 'ffip-patterns ext))
-      '("*"))
+  '("*"))
 (setq ffip-limit 102400)
 (setq ffip-find-options "-not -wholename '*.a' -not -regex '.*\\.git.*' -not -regex '.*\\.db.*'")
 
@@ -243,7 +243,7 @@
 
 ;; load work-specific stuff
 (if (file-exists-p "~/.emacs.d/work.el")
-    (load "~/.emacs.d/work.el"))
+  (load "~/.emacs.d/work.el"))
 
 ;; markdown mode
 (autoload 'markdown-mode "markdown-mode"
@@ -257,8 +257,8 @@
   "Edit currently visited file as root.  With a prefix ARG prompt for a file to visit.  Will also prompt for a file to visit if current buffer is not visiting a file."
   (interactive "P")
   (if (or arg (not buffer-file-name))
-      (find-file (concat "/sudo:root@localhost:"
-                         (ido-read-file-name "Find file(as root): ")))
+    (find-file (concat "/sudo:root@localhost:"
+                 (ido-read-file-name "Find file(as root): ")))
     (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 (global-set-key (kbd "C-x C-r") 'sudo-edit)
 
@@ -284,28 +284,28 @@
 ;; presentations in Emacs - yay, one more violation of the UNIX philosophy ;)
 (autoload 'org-present "org-present" nil t)
 (add-hook 'org-present-mode-hook
-          (lambda ()
-            (linum-mode 0)
-            (global-hl-line-mode 0)
-            (org-present-big)
-            (org-display-inline-images)
-            (visual-line-mode)))
+  (lambda ()
+    (linum-mode 0)
+    (global-hl-line-mode 0)
+    (org-present-big)
+    (org-display-inline-images)
+    (visual-line-mode)))
 (add-hook 'org-present-mode-quit-hook
-          (lambda ()
-            (linum-mode 1)
-            (global-hl-line-mode 1)
-            (org-present-small)
-            (org-remove-inline-images)
-            (setq visual-line-mode nil)))
+  (lambda ()
+    (linum-mode 1)
+    (global-hl-line-mode 1)
+    (org-present-small)
+    (org-remove-inline-images)
+    (setq visual-line-mode nil)))
 
 ;; helper function to connect to HipChat rooms through jabber.el
 (defun hipchat-join (room)
   (interactive "sRoom name: ")
   (jabber-groupchat-join
-   (jabber-read-account)
-   (concat hipchat-number "_" room "@conf.hipchat.com")
-   hipchat-nickname
-   t)
+    (jabber-read-account)
+    (concat hipchat-number "_" room "@conf.hipchat.com")
+    hipchat-nickname
+    t)
   (require 'jabber-emoicon))
 (custom-set-variables '(jabber-auto-reconnect t))
 
