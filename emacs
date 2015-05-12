@@ -6,6 +6,12 @@
                          ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
+(global-set-key (kbd "C-M-x") 'magit-status)
+
+;; a sensible font size for a 15" 1080p LCD
+(when (member "DejaVu Sans Mono" (font-family-list))
+  (set-face-attribute 'default nil :font "DejaVu Sans Mono 11"))
+
 (when window-system
   (load-theme 'solarized t))
 
@@ -335,7 +341,3 @@
 
 ;; load ALL THE MESSAGES in Gnus; best of luck if on Usenet
 (setq gnus-large-newsgroup nil)
-
-;; a sensible font size for a 15" 1080p LCD
-(when (member "DejaVu Sans Mono" (font-family-list))
-  (set-face-attribute 'default nil :font "DejaVu Sans Mono 11"))
