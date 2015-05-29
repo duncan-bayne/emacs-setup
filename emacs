@@ -6,14 +6,19 @@
                           ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
-(global-set-key (kbd "C-M-x") 'magit-status)
+(global-set-key (kbd "C-M-q") 'magit-status)
 
 ;; a sensible font size for a 15" 1080p LCD
 (when (member "DejaVu Sans Mono" (font-family-list))
   (set-face-attribute 'default nil :font "DejaVu Sans Mono 11"))
 
 (when window-system
-  (load-theme 'solarized t))
+  (load-theme 'solarized t)
+  (set-frame-parameter nil 'background-mode 'dark)
+  (when (not (display-graphic-p (selected-frame)))
+    (set-terminal-parameter (frame-terminal frame) 'background-mode mode))
+  (scroll-bar-mode -1)
+  (enable-theme 'solarized))
 
 ;; my own extensions
 (add-to-list 'load-path "~/.emacs.d/duncans_emacs")
@@ -28,10 +33,6 @@
 ;; allow us to use the X-Windows clipboard
 (setq x-select-enable-clipboard t)  ; as above
 (setq interprogram-paste-function 'x-cut-buffer-or-selection-value)
-
-(custom-set-faces
-  ;; make the line numbers fade into the background in console mode
-  '(linum ((t (:inherit (shadow default) :background "grey" :foreground "black")))))
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
