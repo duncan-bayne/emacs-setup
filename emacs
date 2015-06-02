@@ -6,7 +6,7 @@
                           ("melpa" . "http://melpa.org/packages/")))
 (package-initialize)
 
-(global-set-key (kbd "C-M-q") 'magit-status)
+(global-set-key (kbd "s-q") 'magit-status)
 
 ;; a sensible font size for a 15" 1080p LCD
 (when (member "DejaVu Sans Mono" (font-family-list))
