@@ -1,6 +1,7 @@
-emacs.d/session*
-emacs.d/work.el
 emacs.d/ac-comphist.dat
-emacs.d/tramp
-ido.last
+emacs.d/bbdb
 emacs.d/ido.last
+emacs.d/session*
+emacs.d/tramp
+emacs.d/work.el
+ido.last

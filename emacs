@@ -342,3 +342,11 @@
 
 ;; load ALL THE MESSAGES in Gnus; best of luck if on Usenet
 (setq gnus-large-newsgroup nil)
+
+; contacts DB
+(require 'bbdb)
+(bbdb-initialize 'gnus)
+(add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
+(setq bbdb-complete-name-full-completion t)
+(setq bbdb-completion-type 'primary-or-name)
+(setq bbdb-complete-name-allow-cycling t)

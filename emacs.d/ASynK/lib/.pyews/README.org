@@ -1,0 +1,35 @@
+
+This is a pure python wrapper for use with Microsoft Exchange Web Services
+(EWS). For now it only understands contacts and contact folders.
+
+It was origially developed for use with ASynK -
+http://karra-asynk.appspot.com/, a bi-directional contact sync utility that
+supports a variety of contact stores incuding Google contacts, MS Outlook, MS
+Exchange, CardDAV, and Emacs BBDB.
+
+* Dependencies
+
+  You will need a few python packages which are listed in the
+  requirements.txt file, please install them
+
+  Once that is done, you should be able to use this on any platform that runs
+  python.
+
+* Getting started
+
+  This is very early days for pyews. You should be look at the file
+  tests/misc.py to get an idea of how to get started. (Sorry; it looks
+  horrible, I know)
+
+  You must create a file ```auth.txt``` in that directory; it should have three
+  lines in it:
+
+  - full_email_adddress@server.com
+  - password
+  - The mailbox URL for your exchange account (for e.g. ```https://outlook.office365.com/EWS/Exchange.asmx```)
+
+  Once you have that file, you can execute the misc.py as ```python misc.py```
+
+* Links to important reference docs
+
+- http://msdn.microsoft.com/en-us/library/office/jj900168.aspx Start Using Web Services in Exchange

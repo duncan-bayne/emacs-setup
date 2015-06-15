@@ -1,0 +1,35 @@
+{% extends "base_request.xml" %}
+{% autoescape None %}
+{% block body %}
+    <m:GetItem>
+        <m:ItemShape>
+           <t:BaseShape>AllProperties</t:BaseShape>
+           <t:AdditionalProperties>
+               <!-- We will always request some additional information. -->
+               <!-- This can be made more efficient, but WTH -->
+
+               <!-- Gender -->
+               <t:ExtendedFieldURI
+                    PropertyType="{{ ews_pt(mt.PR_GENDER) }}"
+                    PropertyTag="{{ ews_pid(mt.PR_GENDER) }}" />
+
+               <!-- Last Modifiation Time -->
+               <t:ExtendedFieldURI
+                    PropertyType="{{ ews_pt(mt.PR_LAST_MODIFICATION_TIME) }}"
+                    PropertyTag="{{ ews_pid(mt.PR_LAST_MODIFICATION_TIME) }}" />
+
+               <!-- Any other client specified extended properties -->
+               {% for eprop_xml in custom_eprops_xml %}
+                   {{ eprop_xml }}
+               {% end %}
+
+           </t:AdditionalProperties>
+        </m:ItemShape>
+
+        <m:ItemIds>
+          {% for iid in itemids %}
+              <t:ItemId Id="{{ iid }}" />
+          {% end %}
+        </m:ItemIds>
+    </m:GetItem>
+{% end %}

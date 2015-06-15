@@ -1,0 +1,182 @@
+This file is a README for the 'carddav' branch - an experimental branch for a
+new datastore backend for CardDAV servers. The idea is with this one can sync
+BBDB and MS Outlook contacts to a CardDAV server.
+
+* Installation & Usage Notes for CardDAV
+
+  Keep in mind this is an experimental feature. Unlike Google Contacts,
+  CardDAV servers do not generally support a roll back feature. This means any
+  ASynK bugs could potentially lead to loss of information for you. So please
+  take your own precautions before you deploy this on your live data.
+
+** Steps
+
+   $ ./asynk.py --op=create-profile --name testbbcd --user-dir=~/.asynk.carddav --db bb cd --folder default default --store <opath-to-bbdb-file> 'https:localhost:8443'
+   $ ./asynk.py --op=sync --user-dir=~/.asynk.carddav --name testbbcd --dry-run
+
+   Ensure you are able to login to your account properly.
+
+   $ ./asynk.py --op=sync --user-dir=~/.asynk.carddav --name testbbcd
+
+** Notes
+
+   1. Create a test set up for your evaluation. This should include a test
+      list of your contacts in a separate BBDB datastore, and a test carddav
+      server account. I also strongly encourage you use the --user-dir option
+      while invoking asynk, so that your 'production' state.json is not messed
+      with.
+
+   2. The config.json format has changed a bit to accomodate the
+      requirements. So you should copy the config.json from the asynk source
+      directory manually to your asynk user dir. This step will be automated
+      at a later time before official release.
+
+   3. You will be prompted for your carddav server login and password from
+      STDIN. You can avoid having to type this repeatedly by piping your
+      password to asynk or having the following entry in your ~/.netrc
+
+      machine cd_testbbcd
+      login <<login>>
+      password <<password>>
+
+      Note that the 'testbbcd' is the name of the test profile you created.
+
+   4. If you want to sync to a specific folder on the server you can do that
+      at the time of profile creation, like in this example: 
+
+      $ ./asynk.py --op=create-profile --name testbbcd --user-dir=~/.asynk.carddav --db bb cd --folder default '/addressbooks/__uids__/skarrag/addressbook' --store <opath-to-bbdb-file> 'localhost:8008'
+
+   5. The following fields are synched to/from the carddav contacts:
+
+      - First name
+      - Last name
+      - Middle name
+      - Formatted name
+      - Suffix, Prefix
+      - Gender
+      - Email addresses
+      - Phone numbers
+      - Title
+      - Department
+      - Company name
+      - Notes
+
+      More will be supported over time.
+
+* TODOs
+
+** Post initial announcement
+
+    - (Optional) Table of supported fields and interop matrix
+   - Test against different servers and maintain supported status
+   - Recognize server return format and assert vCard 3.0
+   - Support additional vCard property tag extensions in common use. 
+
+*** Tag support
+ 
+    - IM
+    - WWW
+    - Postal Addresses
+    - Custom fields
+
+* Developer's Log
+
+** Thu Apr 18 18:16:40 IST 2013
+
+   All sync related stuff is now sorted. All changes on both client and server
+   get picked up and "the needful" is done! Hurrah.
+
+   The next big item to crack is to do a thorough map of the fields and vCard
+   attributes. This is particularly important given the terrible situation
+   with respect to interop and lack of standardization.
+
+   In the spirit of "be flexible in what you accept, be conservative in what
+   you put out"... as applicable to our situation, I think the best approach
+   is to identify the most popular extended attributes for various situations,
+   and to (a) look for them to input data and (b) to write redundant
+   attribtues for different clients so the generated vCard files will be
+   readable by multiple clients.
+
+** Tue Apr 16 18:40:45 IST 2013
+
+   Lots of progress. Now the batch_create and batch_update methods are
+   implemented. So a BBDB, say, contacts that are not synched, or are synched
+   and updated, are properly identified and synched to server - full etag
+   support and all that good stuff.
+
+   CardDAV server side dedits are not getting properly recognized. This and
+   other stuff needs to be figured out next. Exciting.
+
+** Mon Apr 15 18:22:28 IST 2013
+
+   Some pretty nice progress. Now we can create a new profile containing a
+   'cd' store, and do a sync dry run. The status are properly fetched and
+   displayed.
+
+** Wed Apr 10 07:22:11 IST 2013
+
+   Got the multiget request to work. Now on to figuring out the rest of the stuff.
+
+** Sat Apr 06 22:36:39 IST 2013
+
+   Started to explore how to start querying the server, etc. Turns out we have
+   a few major problems:
+   
+   a) webdav/carddav do not have a concept of multiput. So when we are putting
+      updates to the server, we have to do one URI at a time. How lame!
+
+   b) The apple tool and client library we have does not really implement the
+      carddav multiget and other options. We have some way to go to figure out
+      how to implement some of those things first before using them in our
+      code.
+
+** Fri Apr 05 15:53:17 IST 2013
+
+   Learnt that UID is required; the URI has nothing to do with the UID (or any
+   other field for that matter). Just needs to be unique. The RFC talks about
+   this topic.
+
+   Implemented email address support; and spent a lot of time understaning how
+   params are encoded by vobject etc.
+
+   Also learnt that the overall field mapping interop situation is a
+   mess. vCard 3.0 is the most widely implemented system; and yet there are so
+   many basic fields that are not defined. Respect for MS has gone up another
+   notch after I found their [MS-OXVCARD.pdf] specification laying out in
+   details the field mappings from outlook contact from/to vCard.
+
+   The mapping strategy is to see what Google Contact, Apple Addressbook, and
+   MS Outlook mapings look like and support them as applicable. Reading is
+   fine, but writing may be a challenge.
+
+** Thu Apr 04 19:21:33 IST 2013
+
+   Able to (a) fetch a vcf file from server (b) parse and extract a few fields
+   (like name, suffix etc.) from it, and (c) construct a contact object
+
+   Also able to construct a simple CDContact objet, and then push it to the
+   sever.
+
+   That is some pretty good progress... but many things about UID management
+   are not clear. For sake of convenience added a get_uid/set_uid pair for
+   contact_cd.py, but this is not the right way to go. Need to understand how
+   the vCard UID field is used And also figure out how it is to be used in
+   synching.
+
+** Thu Apr 04 13:27:53 IST 2013
+
+   Able to read server side addressbook folders, fetch their contents, and
+   construct the pimdb/folder/contact objects. Next step is to be able to
+   parse the vCard files and construct Contacts objects from fetched contents.
+
+** Tue Apr 02 19:39:42 IST 2013
+
+   Discovered Apple's pretty decent caldavclientlibrary, which has
+   webdav/caldav/carddav wrappers. It's going to make it easier to deal with
+   the server, and we will at least work with Apple's Calendar server. Hooked
+   up this guy with a simple test script and pimdb_cd.py is on its way! Humble
+   beginning.
+
+* Timelog
+
+  Moved to Time.org on Fri Aug 09 18:25:51 IST 2013
