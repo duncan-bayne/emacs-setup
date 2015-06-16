@@ -350,3 +350,7 @@
 (setq bbdb-complete-name-full-completion t)
 (setq bbdb-completion-type 'primary-or-name)
 (setq bbdb-complete-name-allow-cycling t)
+
+; better undo
+(require 'undo-tree)
+(global-undo-tree-mode)
