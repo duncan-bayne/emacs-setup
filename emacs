@@ -146,9 +146,6 @@
 ;; highlight current line
 (global-hl-line-mode 1)
 
-;; prevent emacs from making backup files
-(setq make-backup-files nil)
-
 ;; allow automagic editing of ccrypt-ed files
 (require 'jka-compr-ccrypt "jka-compr-ccrypt.el")
 
@@ -343,7 +340,7 @@
 ;; load ALL THE MESSAGES in Gnus; best of luck if on Usenet
 (setq gnus-large-newsgroup nil)
 
-; contacts DB
+;; contacts DB
 (require 'bbdb)
 (bbdb-initialize 'gnus)
 (add-hook 'gnus-startup-hook 'bbdb-insinuate-gnus)
@@ -351,6 +348,10 @@
 (setq bbdb-completion-type 'primary-or-name)
 (setq bbdb-complete-name-allow-cycling t)
 
-; better undo
+;; better undo
 (require 'undo-tree)
 (global-undo-tree-mode)
+
+;; prevent emacs from making backup or autosave files
+(setq auto-save-default nil)
+(setq make-backup-files nil)
