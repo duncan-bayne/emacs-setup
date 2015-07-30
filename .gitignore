@@ -5,3 +5,4 @@ emacs.d/session*
 emacs.d/tramp
 emacs.d/work.el
 ido.last
+.emacs.desktop*
