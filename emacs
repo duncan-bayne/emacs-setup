@@ -157,11 +157,12 @@
 ;; dont save a semantic.cache file in every dir (courtesy http://shreevatsa.wordpress.com/)
 (setq semanticdb-default-save-directory "~/.emacs.d/semantic_cache")
 
-;; hide line numbers for terminals
+;; hide line numbers for terminals, Jabber
 ;; no way of turning off line highlighting, grump grump grump (http://www.emacswiki.org/emacs/HighlightCurrentLine)
-(add-hook 'term-mode-hook
-  (lambda ()
-    (linum-mode 0)))
+(defun disable-linum-mode ()
+  (linum-mode 0))
+(add-hook 'term-mode-hook 'disable-linum-mode)
+(add-hook 'jabber-chat-mode-hook 'disable-linum-mode)
 
 ;; launch some shells unless we're in Windows
 (if (and
