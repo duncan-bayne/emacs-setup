@@ -65,7 +65,8 @@
      "~/.emacs.d/quack"
      "~/.emacs.d/undo-tree"
      "~/.emacs.d/ws-trim"
-     "~/.emacs.d/yaml-mode"))
+     "~/.emacs.d/yaml-mode"
+     "~/.emacs.d/yari.el"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
@@ -355,3 +356,14 @@
 ;; prevent emacs from making backup or autosave files
 (setq auto-save-default nil)
 (setq make-backup-files nil)
+
+;; offline Ruby documentation in Emacs
+;; thanks to https://github.com/ldeck/ldeck-starter-kit for ideas
+(require 'yari)
+(setq yari-ri-program-name (concat (getenv "HOME") "/.rbenv/shims/ri"))
+(setq yari-ruby-program-name (concat (getenv "HOME") "/.rbenv/shims/ruby"))
+
+(defun yari-bind-key ()
+  (local-set-key (kbd "C-h r") 'yari))
+
+(add-hook 'ruby-mode-hook 'yari-bind-key)
