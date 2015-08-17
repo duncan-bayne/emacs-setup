@@ -13,40 +13,49 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-(defun duncans_emacs:kill-unmodified-buffers()
-  "Kill any unmodifier buffers that are inspecting files."
-  (interactive)
-  (mapcar
-   '(lambda (buf)
-      (if (and (buffer-file-name buf) (not (buffer-modified-p buf)))
-    (kill-buffer buf)))
-   (buffer-list)))
-
 (defun duncans_emacs:add-to-load-path (path-list)
   "Adds each path in path-list to the load path."
   (mapcar
-   (lambda (path)
-     (add-to-list 'load-path path))
-   path-list))
+    (lambda (path)
+      (add-to-list 'load-path path))
+    path-list))
 
-(defun duncans_emacs:set-mode (mode filename-pattern-list)
-  "Sets the specified mode for each filename pattern in filename-pattern-list."
+(defun duncans_emacs:change-all-terminal-dirs (new-directory)
+  "Changes the default directory for every buffer that is a terminal."
+  (interactive)
   (mapcar
-   (lambda (filename-pattern)
-     (setq
-      auto-mode-alist
-      (cons (cons filename-pattern mode) auto-mode-alist)))
-   filename-pattern-list))
+    '(lambda (buf)
+       (if (eq (with-current-buffer buf major-mode) 'term-mode)
+         (with-current-buffer buf (cd new-directory))))
+    (buffer-list)))
 
 (defun duncans_emacs:create-terminals (terminal-names)
   "Creates terminals with the specified names using multi-term."
   (require 'multi-term)
   (setq multi-term-program "/usr/bin/zsh")
   (mapcar
-   (lambda (desired-name)
-     (multi-term)
-     (set-buffer "*terminal<1>*")
-     (rename-buffer desired-name))
+    (lambda (desired-name)
+      (multi-term)
+      (set-buffer "*terminal<1>*")
+      (rename-buffer desired-name))
     terminal-names))
+
+(defun duncans_emacs:kill-unmodified-buffers()
+  "Kill any unmodifier buffers that are inspecting files."
+  (interactive)
+  (mapcar
+    '(lambda (buf)
+       (if (and (buffer-file-name buf) (not (buffer-modified-p buf)))
+         (kill-buffer buf)))
+    (buffer-list)))
+
+(defun duncans_emacs:set-mode (mode filename-pattern-list)
+  "Sets the specified mode for each filename pattern in filename-pattern-list."
+  (mapcar
+    (lambda (filename-pattern)
+      (setq
+        auto-mode-alist
+        (cons (cons filename-pattern mode) auto-mode-alist)))
+    filename-pattern-list))
 
 (provide 'duncans_emacs)
