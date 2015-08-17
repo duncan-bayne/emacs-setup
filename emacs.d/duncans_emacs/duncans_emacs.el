@@ -40,7 +40,7 @@
       (rename-buffer desired-name))
     terminal-names))
 
-(defun duncans_emacs:kill-unmodified-buffers()
+(defun duncans_emacs:kill-unmodified-buffers ()
   "Kill any unmodifier buffers that are inspecting files."
   (interactive)
   (mapcar
