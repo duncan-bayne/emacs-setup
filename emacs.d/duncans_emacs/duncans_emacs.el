@@ -46,6 +46,7 @@
    (lambda (desired-name)
      (multi-term)
      (set-buffer "*terminal<1>*")
-     (rename-buffer desired-name))   terminal-names))
+     (rename-buffer desired-name))
+    terminal-names))
 
 (provide 'duncans_emacs)
