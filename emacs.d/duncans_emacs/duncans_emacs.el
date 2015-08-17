@@ -22,7 +22,7 @@
 
 (defun duncans_emacs:change-all-terminal-dirs (new-directory)
   "Changes the default directory for every buffer that is a terminal."
-  (interactive)
+  (interactive (list (read-directory-name "New directory:")))
   (mapcar
     '(lambda (buf)
        (if (eq (with-current-buffer buf major-mode) 'term-mode)
