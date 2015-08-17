@@ -1,4 +1,4 @@
-;; Copyright (C) Duncan Bayne 2009
+;; Copyright (C) Duncan Bayne 2015
 ;;
 ;; This program is free software: you can redistribute it and/or modify
 ;; it under the terms of the GNU Lesser General Public License as published
