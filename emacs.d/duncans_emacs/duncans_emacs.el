@@ -26,7 +26,12 @@
   (mapcar
     '(lambda (buf)
        (if (eq (with-current-buffer buf major-mode) 'term-mode)
-         (with-current-buffer buf (cd new-directory))))
+         (with-current-buffer buf (progn
+                                    ;; change the buffer working directory
+                                    (cd new-directory)
+
+                                    ;; send a 'cd' command to the terminal
+                                    (term-send-raw-string (concat "cd " new-directory "\n"))))))
     (buffer-list)))
 
 (defun duncans_emacs:create-terminals (terminal-names)
