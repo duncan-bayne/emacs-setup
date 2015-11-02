@@ -327,14 +327,20 @@
 
 (global-set-key (kbd "s-b") 'browse-url-at-point)
 (add-hook 'org-mode-hook (lambda () (toggle-truncate-lines)))
+(setq org-startup-indented t)
+(setq org-hide-leading-stars nil)
 
 (server-start)
 
 ;; keep the same configuration as team-mates
 (load "editorconfig")
 
-;; load ALL THE MESSAGES in Gnus; best of luck if on Usenet
+;; load ALL THE MESSAGES AND SHOW ALL in Gnus; best of luck if on Usenet
 (setq gnus-large-newsgroup nil)
+(setq gnus-parameters
+  '(("nnimap.*"
+     (gnus-use-scoring nil)
+     (display . all))))
 
 ;; contacts DB
 (require 'bbdb)
