@@ -105,7 +105,6 @@
 (require 'js2-mode)
 (require 'coffee-mode)
 (setq coffee-tab-width 2)
-(global-set-key (kbd "C-B") 'coffee-compile-region)
 (duncans_emacs:set-mode 'coffee-mode '("\\.coffee$"))
 
 ;; SASS
