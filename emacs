@@ -36,7 +36,7 @@
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
-  '("~/.emacs.d/auto-complete"
+  '(
      "~/.emacs.d/cl-lib"
      "~/.emacs.d/cucumber.el"
      "~/.emacs.d/diff-hl"
