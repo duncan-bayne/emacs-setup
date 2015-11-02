@@ -380,3 +380,8 @@
     (error (message "Invalid expression")
       (insert (current-kill 0)))))
 (global-set-key (kbd "C-c e") 'eval-and-replace)
+
+(defun my-message-mode-setup ()
+  (setq fill-column 72)
+  (turn-on-auto-fill))
+(add-hook 'message-mode-hook 'my-message-mode-setup)
