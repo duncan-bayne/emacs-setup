@@ -1,14 +1,15 @@
 ;;; sass-mode.el --- Major mode for editing Sass files
 
-;; Copyright (c) 2007, 2008 Nathan Weizenbaum
+;; Copyright (c) 2007, 2008 Natalie Weizenbaum
 
-;; Author: Nathan Weizenbaum
+;; Author: Natalie Weizenbaum
 ;; URL: http://github.com/nex3/haml/tree/master
-;; Version: 3.0.15
+;; Package-Version: 20150508.2012
+;; Version: 3.0.16
 ;; Created: 2007-03-15
-;; By: Nathan Weizenbaum
+;; By: Natalie Weizenbaum
 ;; Keywords: markup, language, css
-;; Package-Requires: ((haml-mode "3.0.15"))
+;; Package-Requires: ((haml-mode "3.0.15") (cl-lib "0.5"))
 
 ;;; Commentary:
 
@@ -26,6 +27,7 @@
 ;;; Code:
 
 (require 'haml-mode)
+(require 'cl-lib)
 
 ;; User definable variables
 
@@ -48,6 +50,7 @@
   '("^.*,$" ;; Continued selectors
     "^ *@\\(extend\\|debug\\|warn\\|include\\|import\\)" ;; Single-line mixins
     "^ *[$!]" ;; Variables
+    "^ *[[:alnum:]\\-]+ *:" ;; Plain attribute values
     )
   "A list of regexps that match lines of Sass that couldn't have
 text nested beneath them.")
@@ -116,7 +119,8 @@ LIMIT is the limit of the search."
     (when (re-search-forward "^ *\\(.+\\)$" limit t)
       (goto-char (match-beginning 1))
       (dolist (keyword sass-line-keywords)
-        (destructuring-bind (keyword subexp-or-fn &optional face fn) keyword
+        (cl-destructuring-bind
+            (keyword subexp-or-fn &optional face fn) keyword
           (when (looking-at keyword)
             (if (integerp subexp-or-fn)
                 (put-text-property (match-beginning subexp-or-fn)
@@ -125,7 +129,7 @@ LIMIT is the limit of the search."
               (setq fn subexp-or-fn))
             (when fn (funcall fn))
             (end-of-line)
-            (return t)))))))
+            (cl-return t)))))))
 
 (defun sass-highlight-selector ()
   "Highlight a CSS selector starting at `point' and ending at `end-of-line'."
@@ -152,14 +156,14 @@ LIMIT is the limit of the search."
 (defun sass-highlight-directive ()
   "Highlight a Sass directive."
   (goto-char (match-end 0))
-  (block nil
-    (case (intern (match-string 1))
+  (cl-block nil
+    (cl-case (intern (match-string 1))
       (for
-       (unless (looking-at " +!\\w+") (return))
+       (unless (looking-at " +!\\w+") (cl-return))
        (put-text-property (match-beginning 0) (match-end 0)
                           'face font-lock-variable-name-face)
        (goto-char (match-end 0))
-       (unless (looking-at " +from") (return))
+       (unless (looking-at " +from") (cl-return))
        (put-text-property (match-beginning 0) (match-end 0)
                           'face font-lock-keyword-face)
        (goto-char (match-end 0))
@@ -170,7 +174,7 @@ LIMIT is the limit of the search."
        (sass-highlight-script-after-match))
 
       (else
-       (unless (looking-at " +if") (return))
+       (unless (looking-at " +if") (cl-return))
        (put-text-property (match-beginning 0) (match-end 0)
                           'face font-lock-keyword-face)
        (sass-highlight-script-after-match))
@@ -181,14 +185,23 @@ LIMIT is the limit of the search."
 
 ;; Mode setup
 
+(defvar sass-mode-map
+  (let ((map (make-sparse-keymap)))
+    (define-key map "\C-c\C-r" 'sass-output-region)
+    (define-key map "\C-c\C-l" 'sass-output-buffer)
+    map))
+
 ;;;###autoload
 (define-derived-mode sass-mode haml-mode "Sass"
-  "Major mode for editing Sass files."
+  "Major mode for editing Sass files.
+
+\\{sass-mode-map}"
   (set-syntax-table sass-syntax-table)
   (setq font-lock-extend-region-functions
         '(font-lock-extend-region-wholelines font-lock-extend-region-multiline))
   (set (make-local-variable 'font-lock-multiline) nil)
   (set (make-local-variable 'comment-start) "/*")
+  (set (make-local-variable 'comment-start-skip) "/[/*]\s*")
   (set (make-local-variable 'haml-indent-function) 'sass-indent-p)
   (set (make-local-variable 'haml-indent-offset) sass-indent-offset)
   (setq font-lock-defaults '(sass-font-lock-keywords t t)))
@@ -197,12 +210,34 @@ LIMIT is the limit of the search."
 
 (defun sass-indent-p ()
   "Return non-nil if the current line can have lines nested beneath it."
-  (loop for opener in sass-non-block-openers
-        if (looking-at opener) return nil
-        finally return t))
+  (cl-loop for opener in sass-non-block-openers
+           if (looking-at opener) return nil
+           finally return t))
+
+;; Command
+
+(defun sass-output-region (start end)
+  "Displays the CSS output for the current block of Sass code.
+Called from a program, START and END specify the region to indent."
+  (interactive "r")
+  (let ((output-buffer "*sass-output*")
+        (errors-buffer "*sass-errors*"))
+    (shell-command-on-region start end "sass --stdin"
+                             output-buffer
+                             nil
+                             errors-buffer)
+    (when (fboundp 'css-mode)
+      (with-current-buffer output-buffer
+        (css-mode)))
+    (switch-to-buffer-other-window output-buffer)))
+
+(defun sass-output-buffer ()
+  "Displays the CSS output for entire buffer."
+  (interactive)
+  (sass-output-region (point-min) (point-max)))
 
 ;;;###autoload
-(add-to-list 'auto-mode-alist '("\\.sass$" . sass-mode))
+(add-to-list 'auto-mode-alist '("\\.sass\\'" . sass-mode))
 
 ;; Setup/Activation
 (provide 'sass-mode)
