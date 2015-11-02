@@ -37,7 +37,6 @@
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
   '(
-     "~/.emacs.d/cucumber.el"
      "~/.emacs.d/diff-hl"
      "~/.emacs.d/editorconfig"
      "~/.emacs.d/emacs-jabber"
