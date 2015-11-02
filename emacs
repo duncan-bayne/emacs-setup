@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/ws-trim"
      "~/.emacs.d/yaml-mode"
      "~/.emacs.d/yari.el"))
 
