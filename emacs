@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/geiser"
      "~/.emacs.d/go-mode"
      "~/.emacs.d/haml-mode"
      "~/.emacs.d/hexrgb"
@@ -54,7 +53,6 @@
      "~/.emacs.d/sass-mode"
      "~/.emacs.d/slime"
      "~/.emacs.d/tomatinho"
-     "~/.emacs.d/quack"
      "~/.emacs.d/undo-tree"
      "~/.emacs.d/ws-trim"
      "~/.emacs.d/yaml-mode"
@@ -258,7 +256,6 @@
 (setq find-grep-options "-q -i")
 
 ;; Geiser and Quack for Racket
-(load-file "~/.emacs.d/geiser/elisp/geiser.el")
 (setq scheme-program-name "racket")
 (defun scheme-mode-quack-hook ()
   (require 'quack)
