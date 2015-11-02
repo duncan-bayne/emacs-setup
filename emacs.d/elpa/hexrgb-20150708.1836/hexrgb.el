@@ -3,18 +3,20 @@
 ;; Filename: hexrgb.el
 ;; Description: Functions to manipulate colors, including RGB hex strings.
 ;; Author: Drew Adams
-;; Maintainer: Drew Adams
-;; Copyright (C) 2004-2013, Drew Adams, all rights reserved.
+;; Maintainer: Drew Adams (concat "drew.adams" "@" "oracle" ".com")
+;; Copyright (C) 2004-2015, Drew Adams, all rights reserved.
 ;; Created: Mon Sep 20 22:58:45 2004
-;; Version: 21.0
-;; Last-Updated: Fri Jan 18 09:01:51 2013 (-0800)
+;; Version: 0
+;; Package-Version: 20150708.1836
+;; Package-Requires: ()
+;; Last-Updated: Wed Jul  8 18:32:29 2015 (-0700)
 ;;           By: dradams
-;;     Update #: 953
+;;     Update #: 985
 ;; URL: http://www.emacswiki.org/hexrgb.el
 ;; Doc URL: http://www.emacswiki.org/SetColor
 ;; Doc URL: http://emacswiki.org/ColorPalette
 ;; Keywords: number, hex, rgb, color, background, frames, display
-;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x
+;; Compatibility: GNU Emacs: 20.x, 21.x, 22.x, 23.x, 24.x, 25.x
 ;;
 ;; Features that might be required by this library:
 ;;
@@ -88,7 +90,14 @@
 ;;
 ;;; Change Log:
 ;;
-;;
+;; 2015/07/08 dadams
+;;     hexrgb-color-name-to-hex, hexrgb-increment-(hue|saturation|value):
+;;       Raise error if x-color-values returns nil (probably from "unspecified-[bf]g").
+;;     hexrgb-color-values-to-hex: Raise error if COMPONENTS is nil.
+;; 2015/02/26 dadams
+;;     hexrgb-hex-to-rgb: Do not use 65535.0 - use (16 ** len) -1 instead.
+;; 2014/08/17 dadams
+;;     hexrgb-read-color: Bind icicle-color-completing.
 ;; 2013/01/18 dadams
 ;;     Added: hexrgb-increment-(hue|saturation|value): Moved them here and renamed from
 ;;       icicle-increment-color-*.  Changed range to 0-1 and added optional arg NB-DIGITS.
@@ -338,22 +347,23 @@ ALLOW-EMPTY-NAME-P is non-nil.  They can then perform an appropriate
 action in case of empty input.
 
 Interactively, or with non-nil MSGP, show color name in the echo area."
-  (interactive "i\np\ni\np")             ; Always convert to RGB interactively.
-  (let* ((completion-ignore-case  t)
+  (interactive "i\np\ni\np")            ; Always convert to RGB interactively.
+  (let* ((completion-ignore-case     t)
+         (icicle-color-completing-p  t)
          ;; Free variables here: `eyedrop-picked-foreground', `eyedrop-picked-background'.
          ;; They are defined in library `palette.el' or library `eyedropper.el'.
-         (colors                  (if (fboundp 'eyedrop-foreground-at-point)
-                                      (append (and eyedrop-picked-foreground
-                                                   '(("*copied foreground*")))
-                                              (and eyedrop-picked-background
-                                                   '(("*copied background*")))
-                                              '(("*mouse-2 foreground*")
-                                                ("*mouse-2 background*")
-                                                ("*point foreground*") ("*point background*"))
-                                              (hexrgb-defined-colors-alist))
-                                    (hexrgb-defined-colors-alist)))
-         (color                   (completing-read (or prompt "Color (name or #R+G+B+): ")
-                                                   colors))
+         (colors                     (if (fboundp 'eyedrop-foreground-at-point)
+                                         (append (and eyedrop-picked-foreground
+                                                      '(("*copied foreground*")))
+                                                 (and eyedrop-picked-background
+                                                      '(("*copied background*")))
+                                                 '(("*mouse-2 foreground*")
+                                                   ("*mouse-2 background*")
+                                                   ("*point foreground*") ("*point background*"))
+                                                 (hexrgb-defined-colors-alist))
+                                       (hexrgb-defined-colors-alist)))
+         (color                      (completing-read (or prompt "Color (name or #R+G+B+): ")
+                                                      colors))
          hex-string)
     (when (fboundp 'eyedrop-foreground-at-point)
       (cond ((string= "*copied foreground*" color) (setq color  eyedrop-picked-foreground))
@@ -482,7 +492,7 @@ Returns a list of HSV components of value 0.0 to 1.0, inclusive."
                  (arith-error nil))
                ;; Must be a number, not a NaN.  The standard test for a NaN is (not (= N N)),
                ;; but an Emacs 20 bug makes (= N N) return t for a NaN also.
-               (or (< emacs-major-version 21) (= saturation saturation)))                
+               (or (< emacs-major-version 21) (= saturation saturation)))
           (if (hexrgb-approx-equal 0.0 saturation)
               (setq hue         0.0
                     saturation  0.0)    ; Again, no color; only value.
@@ -579,10 +589,11 @@ COLOR is a color name or a hex RGB string that starts with \"#\" and
 is followed by an equal number of hex digits for red, green, and blue
 components."
   (unless (hexrgb-rgb-hex-string-p color) (setq color  (hexrgb-color-name-to-hex color)))
-  (let ((len  (/ (1- (length color)) 3)))
-    (list (/ (hexrgb-hex-to-int (substring color 1 (1+ len))) 65535.0)
-          (/ (hexrgb-hex-to-int (substring color (1+ len) (+ 1 len len))) 65535.0)
-          (/ (hexrgb-hex-to-int (substring color (+ 1 len len))) 65535.0))))
+  (let* ((len     (/ (1- (length color)) 3))
+         (max-nb  (float (1- (expt 16 len)))))
+    (list (/ (hexrgb-hex-to-int (substring color 1 (1+ len)))             max-nb)
+          (/ (hexrgb-hex-to-int (substring color (1+ len) (+ 1 len len))) max-nb)
+          (/ (hexrgb-hex-to-int (substring color (+ 1 len len)))          max-nb))))
 
 (defun hexrgb-color-name-to-hex (color &optional nb-digits)
   "Return the RGB hex string, starting with \"#\", for the COLOR name.
@@ -596,15 +607,14 @@ The output string is `#' followed by `nb-digits' hex digits for each
 color component.  So for the default `nb-digits' value of 4, the form
 is \"#RRRRGGGGBBBB\"."
   (setq nb-digits  (or nb-digits  4))
-  (let ((components  (x-color-values color)))
-    (unless components (error "No such color: %S" color))
+  (let ((components  (or (x-color-values color)  (error "No such color: %S" color))))
     (unless (hexrgb-rgb-hex-string-p color)
       (setq color  (hexrgb-color-values-to-hex components nb-digits))))
   color)
 
 ;; Color "components" would be better in the name than color "value"
 ;; but this name follows the Emacs tradition (e.g. `x-color-values',
-;; 'ps-color-values', `ps-e-x-color-values').
+;; `ps-color-values', `ps-e-x-color-values').
 (defun hexrgb-color-values-to-hex (components &optional nb-digits)
   "Convert list of rgb color COMPONENTS to a hex RBG color string.
 Each X in the string is a hexadecimal digit.
@@ -615,6 +625,7 @@ The output string is `#' followed by `nb-digits' hex digits for each
 color component.  So for the default `nb-digits' value of 4, the form
 is \"#RRRRGGGGBBBB\"."
   ;; 4 is the default because `x-color-values' produces appropriate integer values for 4.
+  (unless components (error "`hexrgb-color-values-to-hex': null COMPONENTS argument"))
   (setq nb-digits  (or nb-digits  4))
   (concat "#"
           (hexrgb-int-to-hex (nth 0 components) nb-digits) ; red
@@ -640,15 +651,16 @@ The output list is as for `x-color-values'."
           green  (hexrgb-hex-to-int (substring color ndigits (* 2 ndigits)))
           blue   (hexrgb-hex-to-int (substring color (* 2 ndigits) (* 3 ndigits))))
     (list red green blue)))
-    
+
 ;; Like `doremi-increment-color-component', but for hue only, and with 0-1 range and NB-DIGITS.
 (defun hexrgb-increment-hue (color increment &optional nb-digits)
   "Increase hue component of COLOR by INCREMENT.
 INCREMENT ranges from -100 to 100."
   (unless (string-match "#" color)      ; Convert color name to #hhh...
-    (setq color  (hexrgb-color-values-to-hex (x-color-values color))))
+    (setq color  (hexrgb-color-values-to-hex (or (x-color-values color)
+                                                 (error "No such color: %S" color)))))
   ;; Convert RGB to HSV
-  (let* ((rgb         (x-color-values color))
+  (let* ((rgb         (or (x-color-values color)  (error "No such color: %S" color)))
          (red         (/ (float (nth 0 rgb)) 65535.0)) ; Convert from 0-65535 to 0.0-1.0
          (green       (/ (float (nth 1 rgb)) 65535.0))
          (blue        (/ (float (nth 2 rgb)) 65535.0))
@@ -666,9 +678,10 @@ INCREMENT ranges from -100 to 100."
 (defun hexrgb-increment-saturation (color increment &optional nb-digits)
   "Increase saturation component of COLOR by INCREMENT."
   (unless (string-match "#" color)      ; Convert color name to #hhh...
-    (setq color  (hexrgb-color-values-to-hex (x-color-values color))))
+    (setq color  (hexrgb-color-values-to-hex (or (x-color-values color)
+                                                 (error "No such color: %S" color)))))
   ;; Convert RGB to HSV
-  (let* ((rgb         (x-color-values color))
+  (let* ((rgb         (or (x-color-values color)  (error "No such color: %S" color)))
          (red         (/ (float (nth 0 rgb)) 65535.0)) ; Convert from 0-65535 to 0.0-1.0
          (green       (/ (float (nth 1 rgb)) 65535.0))
          (blue        (/ (float (nth 2 rgb)) 65535.0))
@@ -686,9 +699,10 @@ INCREMENT ranges from -100 to 100."
 (defun hexrgb-increment-value (color increment &optional nb-digits)
   "Increase value component (brightness) of COLOR by INCREMENT."
   (unless (string-match "#" color)      ; Convert color name to #hhh...
-    (setq color  (hexrgb-color-values-to-hex (x-color-values color))))
+    (setq color  (hexrgb-color-values-to-hex (or (x-color-values color)
+                                                 (error "No such color: %S" color)))))
   ;; Convert RGB to HSV
-  (let* ((rgb         (x-color-values color))
+  (let* ((rgb         (or (x-color-values color)  (error "No such color: %S" color)))
          (red         (/ (float (nth 0 rgb)) 65535.0)) ; Convert from 0-65535 to 0.0-1.0
          (green       (/ (float (nth 1 rgb)) 65535.0))
          (blue        (/ (float (nth 2 rgb)) 65535.0))

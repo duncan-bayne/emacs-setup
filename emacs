@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/hexrgb"
      "~/.emacs.d/inform-mode"
      "~/.emacs.d/js2-mode"
      "~/.emacs.d/markdown-mode"
