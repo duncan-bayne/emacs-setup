@@ -4,6 +4,7 @@
 
 ;; Author: David Engster <dengste@eml.cc>
 ;; Keywords: calendar, caldav
+;; Package-Version: 20150131.152
 ;; Package-Requires: ((org "7"))
 ;;
 ;; This file is not part of GNU Emacs.
@@ -889,7 +890,8 @@ Returns buffer containing the ICS file."
 (defun org-caldav-get-uid ()
   "Get UID for event in current buffer."
   (if (re-search-forward "^UID:\\s-*\\(.+\\)\\s-*$" nil t)
-      (let ((uid (match-string 1)))
+      (let ((case-fold-search nil)
+            (uid (match-string 1)))
 	(while (progn (forward-line)
 		      (looking-at " \\(.+\\)\\s-*$"))
 	  (setq uid (concat uid (match-string 1))))
