@@ -1,10 +1,11 @@
 ;;; org-present.el --- Minimalist presentation minor-mode for Emacs org-mode.
-;; 
+;;
 ;; Copyright (C) 2012 by Ric Lister
 ;;
 ;; Author: Ric Lister
 ;; Package-Requires: ((org "7"))
 ;; URL: https://github.com/rlister/org-present
+;; Package-Version: 20141109.1756
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -39,7 +40,7 @@
 ;;             (lambda ()
 ;;               (org-present-big)
 ;;               (org-display-inline-images)))
-;;  
+;;
 ;;   (add-hook 'org-present-mode-quit-hook
 ;;             (lambda ()
 ;;               (org-present-small)
@@ -65,9 +66,13 @@
 (define-key org-present-mode-keymap (kbd "C-c C-q") 'org-present-quit)
 (define-key org-present-mode-keymap (kbd "C-c C-r") 'org-present-read-only)
 (define-key org-present-mode-keymap (kbd "C-c C-w") 'org-present-read-write)
+(define-key org-present-mode-keymap (kbd "C-c <")   'org-present-beginning)
+(define-key org-present-mode-keymap (kbd "C-c >")   'org-present-end)
 
 ;; how much to scale up font size
 (defvar org-present-text-scale 5)
+(defvar org-present-cursor-cache (or cursor-type nil)
+  "Holds the user set value of cursor for `org-present-read-only'")
 (defvar org-present-overlays-list nil)
 
 (define-minor-mode org-present-mode
@@ -83,16 +88,19 @@
   (unless (org-at-heading-p) (outline-previous-heading))
   (let ((level (org-current-level)))
     (when (and level (> level 1))
-      (outline-up-heading (- level 1)))))
+      (outline-up-heading (- level 1) t))))
 
 (defun org-present-next ()
   "Jump to next top-level heading."
   (interactive)
   (widen)
-  (if (org-current-level)
+  (if (org-current-level) ;inside any heading
       (progn
         (org-present-top)
-        (org-get-next-sibling))
+        (or
+         (org-get-next-sibling) ;next top-level heading
+         (org-present-top)))    ;if that was last, go back to top before narrow
+    ;; else handle title page before first heading
     (outline-next-heading))
   (org-present-narrow))
 
@@ -116,6 +124,21 @@
     (outline-next-heading)
     (narrow-to-region (point-min) (point))
     (goto-char (point-min))))
+
+(defun org-present-beginning ()
+  "Jump to first slide of presentation."
+  (interactive)
+  (widen)
+  (beginning-of-buffer)
+  (org-present-narrow))
+
+(defun org-present-end ()
+  "Jump to last slide of presentation."
+  (interactive)
+  (widen)
+  (end-of-buffer)
+  (org-present-top)
+  (org-present-narrow))
 
 (defun org-present-big ()
   "Make font size larger."
@@ -153,7 +176,12 @@
     ;; hide stars in headings
     (goto-char (point-min))
     (while (re-search-forward "^\\(*+\\)" nil t)
-      (org-present-add-overlay (match-beginning 1) (match-end 1)))))
+      (org-present-add-overlay (match-beginning 1) (match-end 1)))
+    ;; hide emphasis markers
+    (goto-char (point-min))
+    (while (re-search-forward org-emph-re nil t)
+      (org-present-add-overlay (match-beginning 2) (1+ (match-beginning 2)))
+      (org-present-add-overlay (1- (match-end 2)) (match-end 2)))))
 
 (defun org-present-rm-overlays ()
   "Remove overlays for this mode."
@@ -164,15 +192,26 @@
   "Make buffer read-only."
   (interactive)
   (setq buffer-read-only t)
-  (setq cursor-type nil)
+  (setq org-present-cursor-cache cursor-type
+        cursor-type nil)
   (define-key org-present-mode-keymap (kbd "SPC") 'org-present-next))
 
 (defun org-present-read-write ()
   "Make buffer read-only."
   (interactive)
   (setq buffer-read-only nil)
-  (setq cursor-type t)
+  (setq cursor-type org-present-cursor-cache)
   (define-key org-present-mode-keymap (kbd "SPC") 'self-insert-command))
+
+(defun org-present-hide-cursor ()
+  "Hide the cursor for current window."
+  (interactive)
+  (internal-show-cursor (selected-window) nil))
+
+(defun org-present-show-cursor ()
+  "Show the cursor for current window."
+  (interactive)
+  (internal-show-cursor (selected-window) t))
 
 ;;;###autoload
 (defun org-present ()
@@ -189,6 +228,9 @@
   (org-present-small)
   (org-present-rm-overlays)
   (widen)
+  ;; Exit from read-only mode before exiting the minor mode
+  (when buffer-read-only
+    (org-present-read-write))
   (run-hooks 'org-present-mode-quit-hook)
   (setq org-present-mode nil))
 
