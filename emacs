@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/php-mode"
      "~/.emacs.d/psvn"
      "~/.emacs.d/sass-mode"
      "~/.emacs.d/slime"
@@ -102,9 +101,6 @@
 (require 'yaml-mode)
 (duncans_emacs:set-mode 'yaml-mode '("\\.yml$"))
 (add-hook 'yaml-mode-hook '(lambda () (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-
-;; PHP
-(require 'php-mode)
 
 ;; Inform support
 (autoload 'inform-mode "inform-mode" "Inform editing mode." t)
