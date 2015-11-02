@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/markdown-mode"
      "~/.emacs.d/multiterm"
      "~/.emacs.d/org-caldav"
      "~/.emacs.d/org-present"
