@@ -36,8 +36,7 @@
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
-  '("~/.emacs.d/emacs-jabber"
-     "~/.emacs.d/emotion-iconous-mode"
+  '( "~/.emacs.d/emotion-iconous-mode"
      "~/.emacs.d/ws-trim"))
 
 ;; Emacs itself
@@ -214,7 +213,6 @@
 (global-set-key (kbd "C-x C-r") 'sudo-edit)
 
 ;; Jabber client
-(require 'jabber-autoloads)
 (require 'emotion-iconous-mode)
 
 ;; some things - like ccrypt - don't like auto-save
