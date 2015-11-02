@@ -38,7 +38,6 @@
 (duncans_emacs:add-to-load-path
   '(
      "~/.emacs.d/emacs-jabber"
-     "~/.emacs.d/emms"
      "~/.emacs.d/emotion-iconous-mode"
      "~/.emacs.d/find-file-in-project"
      "~/.emacs.d/geiser"
