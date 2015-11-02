@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/psvn"
      "~/.emacs.d/sass-mode"
      "~/.emacs.d/slime"
      "~/.emacs.d/tomatinho"
