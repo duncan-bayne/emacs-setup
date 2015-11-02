@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/undo-tree"
      "~/.emacs.d/ws-trim"
      "~/.emacs.d/yaml-mode"
      "~/.emacs.d/yari.el"))
@@ -155,10 +154,6 @@
 
 ;; https://github.com/duncan-bayne/mint-setup/issues/16 (Emacs: content-search across code files)
 (global-set-key (kbd "C-x F") 'find-name-dired)
-
-;; undo-tree
-(require 'undo-tree)
-(global-undo-tree-mode)
 
 ;; Interactively Do Things ( http://emacswiki.org/emacs/InteractivelyDoThings )
 (require 'ido)
