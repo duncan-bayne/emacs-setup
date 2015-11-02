@@ -385,3 +385,8 @@
   (setq fill-column 72)
   (turn-on-auto-fill))
 (add-hook 'message-mode-hook 'my-message-mode-setup)
+
+;; Cypher / Neo4j
+(duncans_emacs:set-mode
+  'cypher-mode
+  '("\\.cql$"))
