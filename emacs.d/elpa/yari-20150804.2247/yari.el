@@ -6,6 +6,7 @@
 ;; Maintainer: Aleksei Gusev <aleksei.gusev@gmail.com>
 ;; Created: 24 Apr 2010
 ;; Version: 0.7
+;; Package-Version: 20150804.2247
 ;; Keywords: tools
 
 ;; This program is free software; you can redistribute it and/or modify
@@ -48,10 +49,6 @@
 ;; (add-hook 'ruby-mode-hook 'ri-bind-key)
 ;;
 ;; You can use C-u M-x yari to reload all completion targets.
-
-;; DB: This is a slightly modified version of yari.el; I've submitted a PR to
-;; the maintainer with the changes, and will switch to the package version if
-;; / when those changes are mainlined and released.
 
 ;;; Code:
 
@@ -114,14 +111,14 @@
   (interactive (list nil current-prefix-arg))
   (let ((completing-read-func (if (null ido-mode)
                                   'completing-read
-        'ido-completing-read)))
+				'ido-completing-read)))
     (setq ri-topic (or ri-topic
                        (funcall completing-read-func
-        "yari: "
-        (yari-ruby-obarray rehash)
-        nil
-        t
-        (yari-symbol-at-point)))))
+				"yari: "
+				(yari-ruby-obarray rehash)
+				nil
+				t
+				(yari-symbol-at-point)))))
   (let ((yari-buffer-name (format "*yari %s*" ri-topic)))
     (unless (get-buffer yari-buffer-name)
       (let ((yari-buffer (get-buffer-create yari-buffer-name))
@@ -170,7 +167,7 @@
  (defmacro yari-with-ruby-obarray-cache-mock (cache-mock &rest body)
    (declare (indent 1))
    `(unwind-protect
-  (let* ((,cache-mock '("NotExistClassInRuby" "NotExistClassInRuby#mmmmm"))
+	(let* ((,cache-mock '("NotExistClassInRuby" "NotExistClassInRuby#mmmmm"))
                (yari-ruby-obarray-cache ,cache-mock))
           ,@body))))
 
@@ -289,7 +286,7 @@
                          (bad-thing-found-p))
                      (mapc '(lambda (line)
                               (when (string-match "Updating class cache" line)
-        (setq bad-thing-found-p t)))
+				(setq bad-thing-found-p t)))
                            (yari-ruby-obarray))
                      bad-thing-found-p)))
 
@@ -327,7 +324,7 @@
   'help-echo "mouse-2, RET: Display yari help on this method"
   'follow-link t
   'action (lambda (button)
-      (yari (button-get button 'yari-method))))
+	    (yari (button-get button 'yari-method))))
 
 (defcustom yari-emacs-method-face
   'underline
@@ -360,166 +357,166 @@
   ;; Ruby 1.9 formats the page different.  The first line is all -'s.
   ;; The second line has what use to be at the end of the first line
   (let* ((bol (progn
-    (if (looking-at "^-+$")
-        (forward-line 1))
-    (point)))
-   (eol (progn (forward-line 1) (point)))
-   (includes-start (re-search-forward "^Includes:" nil t))
-   (constant-start  (re-search-forward "^Constants:" nil t))
-   (class-start  (re-search-forward "^Class methods:" nil t))
-   (instance-start (re-search-forward "^Instance methods:" nil t))
-   (page-end (point-max))
-   (class nil)
-   (parent-class nil)
-   (base-class nil)
-   (method nil)
-   search-end)
+		(if (looking-at "^-+$")
+		    (forward-line 1))
+		(point)))
+	 (eol (progn (forward-line 1) (point)))
+	 (includes-start (re-search-forward "^Includes:" nil t))
+	 (constant-start  (re-search-forward "^Constants:" nil t))
+	 (class-start  (re-search-forward "^Class methods:" nil t))
+	 (instance-start (re-search-forward "^Instance methods:" nil t))
+	 (page-end (point-max))
+	 (class nil)
+	 (parent-class nil)
+	 (base-class nil)
+	 (method nil)
+	 search-end)
     (goto-char bol)
     (if (re-search-forward
-   " ?\\(\\(Module\\|Class\\): \\)?\\(\\(\\(\\([^#: ]+\\)\\(::\\|#\\)\\)*\\)\\([^: \t\r\n]+\\)\\)\\( < \\(\\S +\\)\\)?\\s *$"
-   eol t)
-  (let ((match-string0 (match-string 0))
-        (match-string1 (match-string 1))
-        (match-string2 (match-string 2))
-        (match-string3 (match-string 3))
-        (match-string4 (match-string 4))
-        (match-string5 (match-string 5))
-        (match-string6 (match-string 6))
-        (match-string7 (match-string 7))
-        (match-string8 (match-string 8))
-        (match-string9 (match-string 9))
-        (match-string10 (match-string 10))
-        include-pat
-        constant-pat
-        class-pat
-        instance-pat)
-    (if t				;t for debugging
-        (progn
-    ;; "Class: " or "Module: " if present.  In Ruby 1.9.2
-    ;; using RDoc 2.5.8, it is not present
-    (and yari-debug (message (format "match  1: '%s'" match-string1)))
-    ;; "Class" or "Module" if present
-    (and yari-debug (message (format "match  2: '%s'" match-string2)))
-    ;; entire class, module, or method string
-    (and yari-debug (message (format "match  3: '%s'" match-string3)))
-    ;; #3 with final segment removed but the # or :: still
-    ;; attached
-    (and yari-debug (message (format "match  4: '%s'" match-string4)))
-    ;; The piece of the A::B::C:: string.  This is not
-    ;; useful that I can see.
-    (and yari-debug (message (format "match  5: '%s'" match-string5)))
-    ;; #4 but with the :: or # removed
-    (and yari-debug (message (format "match  6: '%s'" match-string6)))
-    ;; The final :: or #.  If it is # then we know we have
-    ;; an instance method.  If it is :: we can have a
-    ;; Module or Class or a class method.  A class method
-    ;; will be noticed by starting with something other
-    ;; than an upper case letter.
-    ;; (This still needs to be implemented)
-    (and yari-debug (message (format "match  7: '%s'" match-string7)))
-    ;; The method name if a method was looked up.  If a
-    ;; class or module was looked up, this is just the
-    ;; final segment of what was looked up.
-    (and yari-debug (message (format "match  8: '%s'" match-string8)))
-    ;; "< base class" if present
-    (and yari-debug (message (format "match  9: '%s'" match-string9)))
-    ;; "base class" if present
-    (and yari-debug (message (format "match 10: '%s'" match-string10)))))
-    ;; We have a module or a class if match-string 7 is
-    ;; null... i.e. we have just "IO" for example.  We know we
-    ;; have a method if match-string 7 is "#".  If match-string
-    ;; 7 is "::" we have to check to see if match-string 8
-    ;; starts with an upper case letter.  Sigh....
-    (save-match-data
-      (if (or (null match-string7)
-        (and (string= match-string7 "::")
-       (string-match "^[A-Z]" match-string8)))
-    (progn
-      (and yari-debug (message "have module or class"))
-      (setq class match-string3))
-        (and yari-debug (message "have a method"))
-        (setq method match-string8)))
-    ;; If this page has Class:, we use one type of pattern,
-    ;; otherwise, we use a differnt pattern
-    (if match-string2
-        (setq include-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)"
-        constant-pat nil
-        class-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)"
-        instance-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)")
-      (setq include-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"
-      constant-pat "^\\s +\\([^-:,. \n\r\t]+\\):?\\s *\n"
-      class-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"
-      instance-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"))
+	 " ?\\(\\(Module\\|Class\\): \\)?\\(\\(\\(\\([^#: ]+\\)\\(::\\|#\\)\\)*\\)\\([^: \t\r\n]+\\)\\)\\( < \\(\\S +\\)\\)?\\s *$"
+	 eol t)
+	(let ((match-string0 (match-string 0))
+	      (match-string1 (match-string 1))
+	      (match-string2 (match-string 2))
+	      (match-string3 (match-string 3))
+	      (match-string4 (match-string 4))
+	      (match-string5 (match-string 5))
+	      (match-string6 (match-string 6))
+	      (match-string7 (match-string 7))
+	      (match-string8 (match-string 8))
+	      (match-string9 (match-string 9))
+	      (match-string10 (match-string 10))
+	      include-pat
+	      constant-pat
+	      class-pat
+	      instance-pat)
+	  (if t				;t for debugging
+	      (progn
+		;; "Class: " or "Module: " if present.  In Ruby 1.9.2
+		;; using RDoc 2.5.8, it is not present
+		(and yari-debug (message (format "match  1: '%s'" match-string1)))
+		;; "Class" or "Module" if present
+		(and yari-debug (message (format "match  2: '%s'" match-string2)))
+		;; entire class, module, or method string
+		(and yari-debug (message (format "match  3: '%s'" match-string3)))
+		;; #3 with final segment removed but the # or :: still
+		;; attached
+		(and yari-debug (message (format "match  4: '%s'" match-string4)))
+		;; The piece of the A::B::C:: string.  This is not
+		;; useful that I can see.
+		(and yari-debug (message (format "match  5: '%s'" match-string5)))
+		;; #4 but with the :: or # removed
+		(and yari-debug (message (format "match  6: '%s'" match-string6)))
+		;; The final :: or #.  If it is # then we know we have
+		;; an instance method.  If it is :: we can have a
+		;; Module or Class or a class method.  A class method
+		;; will be noticed by starting with something other
+		;; than an upper case letter.
+		;; (This still needs to be implemented)
+		(and yari-debug (message (format "match  7: '%s'" match-string7)))
+		;; The method name if a method was looked up.  If a
+		;; class or module was looked up, this is just the
+		;; final segment of what was looked up.
+		(and yari-debug (message (format "match  8: '%s'" match-string8)))
+		;; "< base class" if present
+		(and yari-debug (message (format "match  9: '%s'" match-string9)))
+		;; "base class" if present
+		(and yari-debug (message (format "match 10: '%s'" match-string10)))))
+	  ;; We have a module or a class if match-string 7 is
+	  ;; null... i.e. we have just "IO" for example.  We know we
+	  ;; have a method if match-string 7 is "#".  If match-string
+	  ;; 7 is "::" we have to check to see if match-string 8
+	  ;; starts with an upper case letter.  Sigh....
+	  (save-match-data
+	    (if (or (null match-string7)
+		    (and (string= match-string7 "::")
+			 (string-match "^[A-Z]" match-string8)))
+		(progn
+		  (and yari-debug (message "have module or class"))
+		  (setq class match-string3))
+	      (and yari-debug (message "have a method"))
+	      (setq method match-string8)))
+	  ;; If this page has Class:, we use one type of pattern,
+	  ;; otherwise, we use a differnt pattern
+	  (if match-string2
+	      (setq include-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)"
+		    constant-pat nil
+		    class-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)"
+		    instance-pat "\\s +\\([^, \n\r\t]+\\)\\(,\\|\\s *$\\)")
+	    (setq include-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"
+		  constant-pat "^\\s +\\([^-:,. \n\r\t]+\\):?\\s *\n"
+		  class-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"
+		  instance-pat "^\\s +\\([^-,. \n\r\t]+\\)\\s *\n"))
 
-    ;; Icky but we need to trim off the last :: or # of the entire class name.
-    (if (< (match-beginning 4) (match-end 4))
-        (setq parent-class (buffer-substring (match-beginning 4)
-               (match-beginning 7))))
-    (setq base-class match-string10)
-    (and yari-debug (message (format "base-class %s" base-class)))
-    (and yari-debug (message (format "parent-class %s" parent-class)))
-    ;; Make a button for the parent class if any
-    (if (< (match-beginning 4) (match-end 4))
-        (make-button (match-beginning 4)
-         (match-beginning 7)
-         'type 'yari-method
-         'face yari-emacs-method-face
-         'yari-method parent-class))
-    ;; Make a button for the base class if any
-    (if base-class
-        (make-button (match-beginning 10)
-         (match-end 10)
-         'type 'yari-method
-         'face yari-emacs-method-face
-         'yari-method base-class))
-    ;; If these match, then it must be a Module or a Class.  So
-    ;; use the class as the containing class or module
-    ;; name.
-    (if includes-start
-        (progn
-    (goto-char (or constant-start class-start instance-start page-end))
-    (forward-line 0)
-    (setq search-end (point))
-    (goto-char includes-start)
-    (while (re-search-forward include-pat search-end t)
-      (make-button (match-beginning 1)
-             (match-end 1)
-             'type 'yari-method
-             'face yari-emacs-method-face
-             'yari-method (match-string 1)))))
-    (if (and constant-start constant-pat)
-        (progn
-    (goto-char (or class-start instance-start page-end))
-    (forward-line 0)
-    (setq search-end (point))
-    (goto-char constant-start)
-    (while (re-search-forward constant-pat search-end t)
-      (make-button (match-beginning 1)
-             (match-end 1)
-             'type 'yari-method
-             'face yari-emacs-method-face
-             'yari-method  (concat class "::" (match-string 1))))))
-    (if class-start
-        (progn
-    (goto-char (or instance-start page-end))
-    (forward-line 0)
-    (setq search-end (point))
-    (goto-char class-start)
-    (while (re-search-forward class-pat search-end t)
-      (make-button (match-beginning 1)
-             (match-end 1)
-             'type 'yari-method
-             'face yari-emacs-method-face
-             'yari-method  (concat class "::" (match-string 1))))))
-    (if instance-start
-        (progn
-    (goto-char instance-start)
-    (while (re-search-forward instance-pat nil t)
-      (make-button (match-beginning 1)
-             (match-end 1)
-             'type 'yari-method
-             'face yari-emacs-method-face
-             'yari-method (concat class "#" (match-string 1)))))))
+	  ;; Icky but we need to trim off the last :: or # of the entire class name.
+	  (if (< (match-beginning 4) (match-end 4))
+	      (setq parent-class (buffer-substring (match-beginning 4)
+						   (match-beginning 7))))
+	  (setq base-class match-string10)
+	  (and yari-debug (message (format "base-class %s" base-class)))
+	  (and yari-debug (message (format "parent-class %s" parent-class)))
+	  ;; Make a button for the parent class if any
+	  (if (< (match-beginning 4) (match-end 4))
+	      (make-button (match-beginning 4)
+			   (match-beginning 7)
+			   'type 'yari-method
+			   'face yari-emacs-method-face
+			   'yari-method parent-class))
+	  ;; Make a button for the base class if any
+	  (if base-class
+	      (make-button (match-beginning 10)
+			   (match-end 10)
+			   'type 'yari-method
+			   'face yari-emacs-method-face
+			   'yari-method base-class))
+	  ;; If these match, then it must be a Module or a Class.  So
+	  ;; use the class as the containing class or module
+	  ;; name.
+	  (if includes-start
+	      (progn
+		(goto-char (or constant-start class-start instance-start page-end))
+		(forward-line 0)
+		(setq search-end (point))
+		(goto-char includes-start)
+		(while (re-search-forward include-pat search-end t)
+		  (make-button (match-beginning 1)
+			       (match-end 1)
+			       'type 'yari-method
+			       'face yari-emacs-method-face
+			       'yari-method (match-string 1)))))
+	  (if (and constant-start constant-pat)
+	      (progn
+		(goto-char (or class-start instance-start page-end))
+		(forward-line 0)
+		(setq search-end (point))
+		(goto-char constant-start)
+		(while (re-search-forward constant-pat search-end t)
+		  (make-button (match-beginning 1)
+			       (match-end 1)
+			       'type 'yari-method
+			       'face yari-emacs-method-face
+			       'yari-method  (concat class "::" (match-string 1))))))
+	  (if class-start
+	      (progn
+		(goto-char (or instance-start page-end))
+		(forward-line 0)
+		(setq search-end (point))
+		(goto-char class-start)
+		(while (re-search-forward class-pat search-end t)
+		  (make-button (match-beginning 1)
+			       (match-end 1)
+			       'type 'yari-method
+			       'face yari-emacs-method-face
+			       'yari-method  (concat class "::" (match-string 1))))))
+	  (if instance-start
+	      (progn
+		(goto-char instance-start)
+		(while (re-search-forward instance-pat nil t)
+		  (make-button (match-beginning 1)
+			       (match-end 1)
+			       'type 'yari-method
+			       'face yari-emacs-method-face
+			       'yari-method (concat class "#" (match-string 1)))))))
       (and yari-debug (message "total miss")))))
 
 (provide 'yari)
