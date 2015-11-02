@@ -37,7 +37,6 @@
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
   '("~/.emacs.d/auto-complete"
-     "~/.emacs.d/ccrypt"
      "~/.emacs.d/cl-lib"
      "~/.emacs.d/coffee-mode"
      "~/.emacs.d/cucumber.el"
@@ -145,9 +144,6 @@
 
 ;; highlight current line
 (global-hl-line-mode 1)
-
-;; allow automagic editing of ccrypt-ed files
-(require 'jka-compr-ccrypt "jka-compr-ccrypt.el")
 
 ;; tab-with-spaces
 (setq-default indent-tabs-mode nil)
@@ -391,3 +387,6 @@
 (duncans_emacs:set-mode
   'cypher-mode
   '("\\.cql$"))
+
+;; edit ccrypted files
+(require 'ps-ccrypt)
