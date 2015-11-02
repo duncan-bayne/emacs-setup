@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/slime"
      "~/.emacs.d/tomatinho"
      "~/.emacs.d/undo-tree"
      "~/.emacs.d/ws-trim"
