@@ -39,7 +39,6 @@
   '(
      "~/.emacs.d/emacs-jabber"
      "~/.emacs.d/emotion-iconous-mode"
-     "~/.emacs.d/find-file-in-project"
      "~/.emacs.d/geiser"
      "~/.emacs.d/go-mode"
      "~/.emacs.d/haml-mode"
