@@ -36,7 +36,9 @@
 
 ;; paths containing additional .el files
 (duncans_emacs:add-to-load-path
-  '("~/.emacs.d/emacs-jabber" "~/.emacs.d/emotion-iconous-mode"))
+  '("~/.emacs.d/emacs-jabber"
+     "~/.emacs.d/emotion-iconous-mode"
+     "~/.emacs.d/ws-trim"))
 
 ;; Emacs itself
 (setq auto-mode-alist (cons '("emacs$" . lisp-mode) auto-mode-alist))
