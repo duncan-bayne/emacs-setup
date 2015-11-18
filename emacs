@@ -47,16 +47,14 @@
 (autoload 'ruby-mode "ruby-mode" "Ruby editing mode." t)
 (duncans_emacs:set-mode
   'ruby-mode
-  '("\\.erb$"
-     "Gemfile$"
-     "\\.gemspec$"
-     "Guardfile$"
-     "\\.prawn$"
-     "\\.rake$"
-     "Rakefile$"
-     "\\.rb$"
-     "\\.rhtml$"
-     "\\.rsel$"))
+  '("Gemfile$"
+    "\\.gemspec$"
+    "Guardfile$"
+    "\\.prawn$"
+    "\\.rake$"
+    "Rakefile$"
+    "\\.rb$"
+    "\\.rsel$"))
 
 ;; HAML
 (require 'haml-mode)
