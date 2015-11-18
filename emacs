@@ -153,13 +153,11 @@
 
 ;; Interactively Do Things ( http://emacswiki.org/emacs/InteractivelyDoThings )
 (require 'ido)
-(custom-set-variables
-  ;; custom-set-variables was added by Custom.
-  ;; If you edit it by hand, you could mess it up, so be careful.
-  ;; Your init file should contain only one such instance.
-  ;; If there is more than one, they won't work right.
-  '(ido-enable-flex-matching t)
-  '(ido-mode (quote both) nil (ido)))
+(ido-everywhere)
+(require 'ido-vertical-mode)
+(ido-mode 1)
+(ido-vertical-mode 1)
+(setq ido-vertical-define-keys 'C-n-and-C-p-only)
 
 ;; don't keep asking to follow VCS links
 (setq vc-follow-symlinks t)
