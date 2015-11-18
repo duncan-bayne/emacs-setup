@@ -151,10 +151,14 @@
 
 ;; Interactively Do Things ( http://emacswiki.org/emacs/InteractivelyDoThings )
 (require 'ido)
-(ido-everywhere)
+(require 'flx-ido)
 (require 'ido-vertical-mode)
+(flx-ido-mode 1)
+(ido-everywhere 1)
 (ido-mode 1)
 (ido-vertical-mode 1)
+(setq ido-enable-flex-matching t)
+(setq ido-use-faces nil)
 (setq ido-vertical-define-keys 'C-n-and-C-p-only)
 
 ;; don't keep asking to follow VCS links
