@@ -3,7 +3,7 @@ in a given project.  It depends on GNU find.
 
 Usage,
   - `M-x find-file-in-project-by-selected' use the selected region
-     as the keyword to search. Or you need provide the keyword
+     as the keyword to search.  Or you need provide the keyword
      if no region selected.
   - `M-x find-file-in-project' will start search immediately
 
@@ -22,7 +22,7 @@ you could set `ffip-find-options' to "-not -regex \".*vendor.*\"".
 
 The variable `ffip-filename-rules' create some extra file names for
 search when calling `find-file-in-project-by-selected'. For example,
-When file basename `hellWorld' provided, `HelloWorld', `hello-world'
+When file basename `helloWorld' provided, `HelloWorld', `hello-world'
 are added as the file name search patterns.
 `C-h v ffip-filename-rules' to see its default value.
 
@@ -32,9 +32,9 @@ details.
 
 ivy-mode is used for filter/search UI
 In ivy-mode, SPACE is translated to regex ".*".
-For exmaple, the search string "dec fun pro" is transformed into
+For example, the search string "dec fun pro" is transformed into
 a regex "\\(dec\\).*\\(fun\\).*\\(pro\\)"
-
+You switch to ido-mode by `(setq ffip-prefer-ido-mode t)'
 
 GNU Find can be installed,
   - through `brew' on OS X
