@@ -348,3 +348,9 @@
 
 ;; edit ccrypted files
 (require 'ps-ccrypt)
+
+;; edit emails nicely using It's All Text
+(duncans_emacs:set-mode
+  'mail-mode
+  '("\\.eml$"))
+(add-hook 'mail-mode-hook 'auto-fill-mode)
