@@ -1,8 +1,9 @@
 emacs.d/ac-comphist.dat
 emacs.d/bbdb
+.emacs.desktop*
 emacs.d/ido.last
+emacs.d/recentf
 emacs.d/session*
 emacs.d/tramp
 emacs.d/work.el
 ido.last
-.emacs.desktop*
