@@ -289,6 +289,7 @@
 
 ;; keep the same configuration as team-mates
 (load "editorconfig")
+(editorconfig-mode 1)
 
 ;; load ALL THE MESSAGES AND SHOW ALL in Gnus; best of luck if on Usenet
 (setq gnus-large-newsgroup nil)
