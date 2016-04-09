@@ -13,12 +13,10 @@
   (set-face-attribute 'default nil :font "DejaVu Sans Mono 10"))
 
 (when window-system
-  (load-theme 'solarized t)
   (set-frame-parameter nil 'background-mode 'dark)
   (when (not (display-graphic-p (selected-frame)))
     (set-terminal-parameter (frame-terminal frame) 'background-mode mode))
-  (scroll-bar-mode -1)
-  (enable-theme 'solarized))
+  (scroll-bar-mode -1))
 
 ;; my own extensions
 (add-to-list 'load-path "~/.emacs.d/duncans_emacs")
